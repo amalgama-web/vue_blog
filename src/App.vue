@@ -193,7 +193,7 @@
         }
         
         &._sm {
-            height: 20px;
+            height: 30px;
             padding: 5px 13px;
             font-size: 12px;
         }
@@ -262,16 +262,15 @@
         
     }
     
+    .field-label {
+        margin-bottom: 5px;
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+    }
+    
     .comment-form {
         max-width: 400px;
-        
-        &__label {
-            margin-bottom: 5px;
-            
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
-        }
         
         &__group {
             margin-bottom: 20px;

@@ -1,18 +1,18 @@
 <template>
     <form class="form-new-article" action="">
         <div class="form-new-article__group">
-            <div class="form-new-article__label">Заголовок статьи:</div>
-            <input placeholder="Заголовок вашей статьи" type="text" v-model="articleName">
+            <div class="field-label">Заголовок статьи:</div>
+            <input placeholder="Заголовок вашей статьи" type="text" v-model.trim="articleName">
         </div>
         
         <div class="form-new-article__group">
-            <div class="form-new-article__label">Текст превью:</div>
-            <textarea placeholder="Превью" v-model="articleShort" name="" id="" cols="30" rows="10"></textarea>
+            <div class="field-label">Текст превью:</div>
+            <textarea placeholder="Превью" v-model.trim="articleShort" name="" id="" cols="30" rows="10"></textarea>
         </div>
         
         <div class="form-new-article__group">
-            <div class="form-new-article__label">Полный текст:</div>
-            <textarea placeholder="Полный текст вашей статьи" v-model="articleFull" name="" id="" cols="30"
+            <div class="field-label">Полный текст:</div>
+            <textarea placeholder="Полный текст вашей статьи" v-model.trim="articleFull" name="" id="" cols="30"
                       rows="10"></textarea>
         </div>
         
@@ -35,13 +35,14 @@
         },
 
         methods: {
+            
             publishArticle() {
                 fakeApi.addArticle({
                     name: this.articleName,
                     shortText: this.articleShort,
                     fullText: this.articleFull
                 });
-            },
+            }
         },
     }
 </script>
@@ -56,13 +57,6 @@
             }
         }
         
-        &__label {
-            margin-bottom: 5px;
-            
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
-        }
     }
 </style>
 

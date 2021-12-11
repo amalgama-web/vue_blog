@@ -15,8 +15,8 @@
                 
                 <div class="article-item__buttons">
                     <div class="article-item__comment-count">Комментариев: {{article.commentList.length}}</div>
-                    <div class="button _green">Редактировать</div>
-                    <div class="button _red" @click.stop.prevent="removeArticle(article.id)">Удалить запись</div>
+                    <div class="button _green _sm" @click.stop>Редактировать</div>
+                    <div class="button _red _sm" @click.stop="removeArticle(article.id)">Удалить запись</div>
                 </div>
             </div>
         </div>

@@ -27,11 +27,11 @@
             
             <div class="comment-form" v-show="isCommentFormOpen">
                 <div class="comment-form__group">
-                    <div class="comment-form__label">Ваше имя:</div>
+                    <div class="field-label">Ваше имя:</div>
                     <input type="text" v-model="commentFormName">
                 </div>
                 <div class="comment-form__group">
-                    <div class="comment-form__label">Ваш комментарий:</div>
+                    <div class="field-label">Ваш комментарий:</div>
                     <textarea v-model="commentFormText" name="" id="" cols="30" rows="10"></textarea>
                 </div>
                 <div class="button" @click="addComment">Отправить</div>
@@ -62,8 +62,6 @@
             },
 
             addComment() {
-                if (!this.currentArticle) return;
-
                 let newComment = fakeApi.addComment({
                     userName: this.commentFormName,
                     text: this.commentFormText
@@ -77,8 +75,6 @@
             },
 
             removeComment(commentID) {
-                if (!this.currentArticle) return;
-
                 fakeApi.removeComment(commentID, this.currentArticle.id);
 
                 let indexToRemove = this.commentList.findIndex(item => item.id === commentID );
