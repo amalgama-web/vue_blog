@@ -92,3 +92,23 @@
         }
     }
 </script>
+
+<style lang="less">
+    .article-view {
+        padding: 40px 0;
+        &__head {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+        
+        &__body {
+            margin-bottom: 50px;
+        }
+        
+        &__subhead {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+    }
+</style>
