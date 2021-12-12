@@ -64,9 +64,10 @@
             removeArticle(articleID) {
                 let indexToRemove = this.articleList.findIndex(item => item.id === articleID );
                 
-                fakeApi.removeArticle(articleID);
+                fakeApi.removeArticle(articleID).then(() => {
+                    this.articleList.splice(indexToRemove, 1);
+                });
                 
-                this.articleList.splice(indexToRemove, 1);
             },
         },
         created() {

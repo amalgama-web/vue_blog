@@ -1,4 +1,7 @@
 <template>
+    <div class="page-preloader" v-if="isPageloaderVisible">
+        <div class="preloader"></div>
+    </div>
     
     <header class="l-container header">
         <div class="header__title">Личный блог</div>
@@ -13,10 +16,24 @@
     export default {
         components: {
         },
-        data() {
+        provide() {
+            return {
+                showPageloader: this.showPageloader,
+                hidePageloader: this.hidePageloader,
+            }
         },
-        methods: {},
-        mounted() {
+        data() {
+            return {
+                isPageloaderVisible: false
+            }
+        },
+        methods: {
+            showPageloader() {
+                this.isPageloaderVisible = true;
+            },
+            hidePageloader() {
+                this.isPageloaderVisible = false;
+            }
         }
     }
 </script>
@@ -190,6 +207,21 @@
         margin: 30px auto;
         background: url('~@/assets/preloader.svg') no-repeat center bottom;
         background-size: contain;
+    }
+    
+    .page-preloader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: fade(#fff, 50%);
+        
     }
 
     ._form-processing {

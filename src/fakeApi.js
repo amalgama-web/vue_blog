@@ -52,8 +52,6 @@ export const fakeApi = {
 
         let updatedArticle  = articles.find( item => item.id === updatedArticleData.id);
 
-        console.log(updatedArticleData);
-
         Object.assign(updatedArticle, updatedArticleData);
 
         localStorage.setItem('articles', JSON.stringify(articles));
@@ -87,7 +85,7 @@ export const fakeApi = {
         localStorage.setItem('articles', JSON.stringify(articles));
 
         let response = true;
-        return response;
+        return this._createPromise(response);
     },
 
     removeComment(commentID, articleID) {

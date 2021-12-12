@@ -7,29 +7,44 @@
         <div class="preloader-wrap" v-if="!isDataLoaded">
             <div class="preloader"></div>
         </div>
-        <div class="article-view" v-else>
-            <div class="article-view__head">
-                {{ currentArticle.name }}
-            </div>
-            <div class="article-view__body">
-                {{ currentArticle.fullText }}
-            </div>
-            
-            <div class="article-view__subhead">Комментарии:</div>
-            <div class="comment-list">
-                <div class="comment-list__empty" v-if="!currentArticle.commentList.length">Комментариев еще нет. Будьте первым</div>
-                <div class="comment-item" v-for="comment in currentArticle.commentList" :key="comment.id">
-                    <div class="comment-item__name">{{ comment.userName }}</div>
-                    <div class="comment-item__text">{{ comment.text }}</div>
-                    <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
+        
+        <div v-else>
+            <div class="article-view" >
+                <div class="article-view__head">
+                    {{ currentArticle.name }}
+                </div>
+                <div class="article-view__body">
+                    {{ currentArticle.fullText }}
+                </div>
+        
+                <div class="article-view__buttons">
+                    <router-link class="button _green"
+                                 :to="{ name: 'EditArticle', params: { id: currentArticle.id } }"
+                                 @click.stop>
+                        Редактировать
+                    </router-link>
+                    <div class="button _red" @click="removeArticle(currentArticle.id)">Удалить статью</div>
                 </div>
             </div>
-            
+    
+            <div class="comments">
+                <div class="comments__head">Комментарии:</div>
+                <div class="comments__list">
+                    <div class="comments__empty" v-if="!currentArticle.commentList.length">Комментариев еще нет. Будьте первым</div>
+                    <div class="comment-item" v-for="comment in currentArticle.commentList" :key="comment.id">
+                        <div class="comment-item__name">{{ comment.userName }}</div>
+                        <div class="comment-item__text">{{ comment.text }}</div>
+                        <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
+                    </div>
+                </div>
+            </div>
+    
             <div class="button" @click="openCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
             <form-new-comment v-show="isCommentFormOpen"
                               @comment-created="pushComment"
                               :article-id="currentArticle.id"></form-new-comment>
         </div>
+        
         
     </div>
 </template>
@@ -42,6 +57,7 @@
         components: {
             FormNewComment
         },
+        inject: ['showPageloader', 'hidePageloader'],
         data() {
             return {
                 currentArticle: null,
@@ -65,17 +81,22 @@
 
                 let indexToRemove = this.currentArticle.commentList.findIndex(item => item.id === commentID );
                 this.currentArticle.commentList.splice(indexToRemove, 1);
+            },
+
+            removeArticle(articleId) {
+                this.showPageloader();
+                fakeApi.removeArticle(articleId).then(() => {
+                    this.hidePageloader();
+                    this.$router.push({ name: 'Home' });
+                });
             }
         },
         
         created() {
-            
             fakeApi.getArticleByID(this.$route.params.id).then((response) => {
                 this.currentArticle = response;
                 this.isDataLoaded = true;
             });
-            
-            
         }
     }
 </script>
@@ -89,22 +110,29 @@
         }
         
         &__body {
-            margin-bottom: 50px;
+            margin-bottom: 30px;
         }
-        
-        &__subhead {
+        &__buttons {
+            & > * {
+                margin-right: 30px;
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+
+    .comments {
+        border-top: 1px solid #ccc;
+        padding: 30px 0;
+        &__head {
             font-size: 20px;
             margin-bottom: 10px;
         }
-        
-    }
-
-    .comment-list {
-        margin-bottom: 40px;
-    
+        &__list {
+        }
         &__empty {
-            font-size: 13px;
-            color: #999;
+            color: #aaa;
             font-style: italic;
         }
     }
@@ -112,8 +140,8 @@
     .comment-item {
         font-size: 13px;
         padding: 20px;
-        border: 1px solid #ddd;
         border-radius: 4px;
+        background-color: #f5f5f5;
     
         &__name {
             font-weight: bold;
