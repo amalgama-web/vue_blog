@@ -111,6 +111,7 @@
         
         &__body {
             margin-bottom: 30px;
+            line-height: 1.8;
         }
         &__buttons {
             & > * {
@@ -139,6 +140,7 @@
 
     .comment-item {
         font-size: 13px;
+        line-height: 20px;
         padding: 20px;
         border-radius: 4px;
         background-color: #f5f5f5;
@@ -149,7 +151,7 @@
         }
     
         &__text {
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
     
         & + .comment-item {

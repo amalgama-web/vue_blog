@@ -19,7 +19,8 @@
         </div>
     
         <div class="form-edit-article__group">
-            <button class="button form-edit-article__submit">Опубликовать статью</button>
+            <button class="button form-edit-article__button">Опубликовать статью</button>
+            <div class="button _green form-edit-article__button" @click="autofill">Заполнить текстом</div>
         </div>
     </Form>
 </template>
@@ -27,6 +28,7 @@
 <script>
     import { fakeApi } from '../fakeApi.js'
     import { Form, Field, ErrorMessage } from 'vee-validate';
+    import { randomText } from '../randomText.js';
     
     export default {
         components: {
@@ -48,6 +50,11 @@
         },
 
         methods: {
+            autofill() {
+                this.name = randomText.getRandomSingleSentence();
+                this.shortText = randomText.getRandomSentences(5);
+                this.fullText = randomText.getRandomSentences(10);
+            },
             publishArticle(values, formActions) {
                 this.isFormInProcess = true;
                 
@@ -100,9 +107,9 @@
 <style lang="less">
     .form-edit-article {
         position: relative;
-        max-width: 500px;
         &__group {
             position: relative;
+            max-width: 500px;
             margin-bottom: 30px;
             
             &:last-child {
@@ -114,8 +121,8 @@
             top: 100%;
             left: 0;
         }
-        &__submit {
-            margin-top: 10px;
+        &__button {
+            margin: 10px 30px 0 0;
         }
     }
 </style>

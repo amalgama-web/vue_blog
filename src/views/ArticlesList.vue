@@ -128,9 +128,16 @@
         
         
         &__text {
-            font-size: 12px;
-            line-height: 17px;
+            font-size: 13px;
+            line-height: 20px;
             margin-bottom: 20px;
+            
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+    
+            max-height: 3 * 20px;
         }
         
         &__buttons {

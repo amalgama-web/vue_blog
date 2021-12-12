@@ -3,17 +3,18 @@
     
         <div class="comment-form__group">
             <div class="field-label">Ваше имя:</div>
-            <Field name="userName" type="text" placeholder="Ваше имя" :rules="isRequired"/>
+            <Field v-model="userName" name="userName" type="text" placeholder="Ваше имя" :rules="isRequired"/>
             <ErrorMessage name="userName" class="error-message comment-form__error"></ErrorMessage>
         </div>
         
         <div class="comment-form__group">
             <div class="field-label">Ваш комментарий:</div>
-            <Field name="text" type="text" placeholder="Введите текст комментария" :rules="isRequired" as="textarea"/>
+            <Field v-model="text" name="text" type="text" placeholder="Введите текст комментария" :rules="isRequired" as="textarea"/>
             <ErrorMessage name="text" class="error-message comment-form__error"></ErrorMessage>
         </div>
         
-        <button class="comment-form__submit button">Опубликовать комментарий</button>
+        <button class="comment-form__button button">Опубликовать комментарий</button>
+        <div class="comment-form__button button _green" @click="autofill">Заполнить текстом</div>
         
     </Form>
 </template>
@@ -21,6 +22,7 @@
 <script>
     import { fakeApi } from '../fakeApi.js'
     import { Form, Field, ErrorMessage } from 'vee-validate';
+    import { randomText } from '../randomText.js';
 
     export default {
         components: {
@@ -33,11 +35,18 @@
         
         data() {
             return {
+                userName: '',
+                text: '',
+                
                 isFormInProcess: false
             }
         },
 
         methods: {
+            autofill() {
+                this.userName = randomText.getRandomName();
+                this.text = randomText.getRandomSentences(4);
+            },
             addComment(values, formActions) {
                 this.isFormInProcess = true;
                 fakeApi.addComment({
@@ -62,14 +71,14 @@
 <style lang="less">
     .comment-form {
         position: relative;
-        max-width: 400px;
+        max-width: 500px;
         
         &__group {
             position: relative;
             margin-bottom: 30px;
         }
-        &__submit {
-            margin-top: 10px;
+        &__button {
+            margin: 10px 30px 0 0;
         }
         &__error {
             position: absolute;
