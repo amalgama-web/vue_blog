@@ -1,5 +1,5 @@
 <template>
-    <Form class="form-edit-article" @submit="publishArticle" :class="{'_form-processing': isFormInProcess}">
+    <Form class="form-edit-article" @submit="publishArticle" :class="{'_element-processing': isFormInProcess}">
         <div class="form-edit-article__group">
             <div class="field-label">Заголовок статьи:</div>
             <Field v-model="name" name="name" type="text" placeholder="Заголовок вашей статьи" :rules="isRequired"/>
@@ -83,7 +83,7 @@
                 });
             },
             isRequired(value) {
-                if (!value) {
+                if (!value.trim()) {
                     return 'Это поле обязательно';
                 }
                 return true;

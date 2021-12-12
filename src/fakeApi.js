@@ -4,7 +4,7 @@ export const fakeApi = {
     },
 
     _getRandTimeout() {
-        return Math.round(Math.random() * 1000) + 500;
+        return Math.round(Math.random() * 500) + 200;
     },
     
     _getArticles() {

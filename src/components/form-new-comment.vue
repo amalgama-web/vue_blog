@@ -1,5 +1,5 @@
 <template>
-    <Form class="comment-form" @submit="addComment" :class="{'_form-processing': isFormInProcess}">
+    <Form class="comment-form" @submit="addComment" :class="{'_element-processing': isFormInProcess}">
     
         <div class="comment-form__group">
             <div class="field-label">Ваше имя:</div>
@@ -59,7 +59,7 @@
                 });
             },
             isRequired(value) {
-                if (!value) {
+                if (!value.trim()) {
                     return 'Это поле обязательно';
                 }
                 return true;

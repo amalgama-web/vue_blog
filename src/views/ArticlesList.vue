@@ -18,6 +18,7 @@
                 <li class="article-item"
                      v-for="article in articleList"
                      :key="article.id"
+                     :class="{'_element-processing': article.inProcessing}"
                      @click="openArticle(article.id)">
                     
                     <div class="article-item__name">{{article.name}}</div>
@@ -62,10 +63,13 @@
             },
 
             removeArticle(articleID) {
-                let indexToRemove = this.articleList.findIndex(item => item.id === articleID );
+                let indexForRemove = this.articleList.findIndex(item => item.id === articleID );
+                let articleForRemove = this.articleList[indexForRemove];
+                articleForRemove.inProcessing = true;
                 
                 fakeApi.removeArticle(articleID).then(() => {
-                    this.articleList.splice(indexToRemove, 1);
+                    this.articleList.splice(indexForRemove, 1);
+                    articleForRemove.inProcessing = true;
                 });
                 
             },
@@ -103,6 +107,7 @@
     
     .article-item {
         display: block;
+        position: relative;
         margin-bottom: 20px;
         padding: 20px;
         background-color: #f5f5f5;

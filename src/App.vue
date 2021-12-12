@@ -224,7 +224,7 @@
         
     }
 
-    ._form-processing {
+    ._element-processing {
         &:before {
             position: absolute;
             z-index: 1;
