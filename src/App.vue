@@ -22,60 +22,14 @@
 </script>
 
 <style lang="less">
-    @color-text: #2d2d2d;
     * {
         box-sizing: border-box;
     }
-    
-    
-    .link-color(@color, @color-hover) {
-        &:focus {
-            color: @color;
-        }
-        &:link {
-            color: @color;
-        }
-        &:visited {
-            color: @color;
-        }
-        &:hover {
-            color: @color-hover;
-        }
-        &:active {
-            color: @color;
-        }
+    ul, li {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
     }
-    
-    .link-color(@color) {
-        &:focus {
-            color: @color;
-        }
-        &:link {
-            color: @color;
-        }
-        &:visited {
-            color: @color;
-        }
-        &:hover {
-            color: @color;
-        }
-        &:active {
-            color: @color;
-        }
-    }
-    
-    .transited() {
-        transition: all 100ms linear 0ms;
-    }
-    
-    .text-trim(@rows, @lineHeight) {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: @rows;
-        -webkit-box-orient: vertical;
-        max-height: @rows * @lineHeight;
-    }
-    
     .placeholder-color(@color) {
         &::-webkit-input-placeholder {
             color: @color;
@@ -96,7 +50,7 @@
         background-color: #fff;
         margin: 0;
         padding: 0;
-        color: @color-text;
+        color: #2d2d2d;
         font: 14px/1.6 Verdana, serif;
     }
     
@@ -116,7 +70,7 @@
         font: inherit;
         
         
-        .transited();
+        transition: all linear 150ms;
         .placeholder-color(#aaa);
         
         &:focus {
@@ -143,7 +97,6 @@
         padding: 40px 20px;
         
     }
-    
     
     .header {
         background-color: #eee;
@@ -178,7 +131,7 @@
         font-size: 14px;
         color: #fff;
         
-        .transited();
+        transition: all linear 150ms;
     
         background-color: cornflowerblue;
         &:hover { background-color: lighten(cornflowerblue, 5%); }
@@ -209,63 +162,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
-    }
-    
-    .article-list {
-        &__head {
-            font-size: 30px;
-            margin-bottom: 30px;
-        }
-    }
-    
-    .article-item {
-        display: block;
-        margin-bottom: 20px;
-        padding: 20px;
-        background-color: #f5f5f5;
-        color: @color-text;
-        .link-color(@color-text);
-        border-radius: 5px;
-        
-        cursor: pointer;
-        .transited();
-        
-        &__name {
-            margin-bottom: 5px;
-            
-            font-size: 20px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        &__text {
-            font-size: 12px;
-            line-height: 17px;
-            .text-trim(2, 17px);
-            
-            margin-bottom: 20px;
-        }
-        
-        &__buttons {
-            display: flex;
-            align-items: center;
-            
-            & > * {
-                margin-right: 20px;
-            }
-        }
-        
-        
-        &:hover {
-            background-color: darken(#f5f5f5, 2%);
-            
-            .article-item__name {
-                color: #3676e8;
-            }
-        }
-        
+        margin-bottom: 50px;
     }
     
     .field-label {
@@ -275,42 +172,12 @@
         font-style: italic;
     }
     
-    .comment-list {
-        margin-bottom: 40px;
-        
-        &__empty {
-            font-size: 13px;
-            color: #999;
-            font-style: italic;
-        }
-    }
-    
-    .comment-item {
-        font-size: 13px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        
-        &__name {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        &__text {
-            margin-bottom: 10px;
-        }
-        
-        & + .comment-item {
-            margin-top: 15px;
-        }
-    }
-
     .preloader {
         display: block;
         width: 60px;
         height: 15px;
         margin: 30px auto;
-        background: url('~@/assets/loading.svg') no-repeat center bottom;
+        background: url('~@/assets/preloader.svg') no-repeat center bottom;
         background-size: contain;
     }
 

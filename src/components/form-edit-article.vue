@@ -1,25 +1,25 @@
 <template>
-    <Form class="form-new-article" @submit="publishArticle">
-        <div class="form-new-article__group">
+    <Form class="form-edit-article" @submit="publishArticle" :class="{'_form-processing': isFormInProcess}">
+        <div class="form-edit-article__group">
             <div class="field-label">Заголовок статьи:</div>
             <Field name="name" type="text" placeholder="Заголовок вашей статьи" :rules="isRequired"/>
-            <ErrorMessage class="error-message form-new-article__error" name="name"></ErrorMessage>
+            <ErrorMessage class="error-message form-edit-article__error" name="name"></ErrorMessage>
         </div>
     
-        <div class="form-new-article__group">
+        <div class="form-edit-article__group">
             <div class="field-label">Текст превью:</div>
             <Field name="shortText" as="textarea" placeholder="Превью" :rules="isRequired"/>
-            <ErrorMessage class="error-message form-new-article__error" name="shortText"></ErrorMessage>
+            <ErrorMessage class="error-message form-edit-article__error" name="shortText"></ErrorMessage>
         </div>
     
-        <div class="form-new-article__group">
+        <div class="form-edit-article__group">
             <div class="field-label">Полный текст:</div>
             <Field name="fullText" as="textarea" placeholder="Полный текст вашей статьи" :rules="isRequired"/>
-            <ErrorMessage class="error-message form-new-article__error" name="fullText"></ErrorMessage>
+            <ErrorMessage class="error-message form-edit-article__error" name="fullText"></ErrorMessage>
         </div>
     
-        <div class="form-new-article__group">
-            <button class="button form-new-article__submit">Опубликовать статью</button>
+        <div class="form-edit-article__group">
+            <button class="button form-edit-article__submit">Опубликовать статью</button>
         </div>
     </Form>
 </template>
@@ -36,20 +36,24 @@
         },
         data() {
             return {
+                isFormInProcess: false
             }
         },
 
         methods: {
             publishArticle(values, formActions) {
-                let newArticleData = fakeApi.addArticle({
+                this.isFormInProcess = true;
+                
+                fakeApi.addArticle({
                     name: values.name,
                     shortText: values.shortText,
                     fullText: values.fullText
+                }).then((newArticleId) => {
+                    this.isFormInProcess = false;
+                    formActions.resetForm();
+                    this.$emit('article-created', newArticleId)
                 });
-
-                formActions.resetForm();
                 
-                this.$router.push({ name: 'Article', params: { id: newArticleData } });
             },
             isRequired(value) {
                 if (!value) {
@@ -62,7 +66,9 @@
 </script>
 
 <style lang="less">
-    .form-new-article {
+    .form-edit-article {
+        position: relative;
+        max-width: 500px;
         &__group {
             position: relative;
             margin-bottom: 30px;
@@ -80,6 +86,31 @@
             margin-top: 10px;
         }
         
+        &._form-processing {
+            &:before {
+                position: absolute;
+                z-index: 1;
+                content: '';
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: fade(#fff, 50%);
+            }
+            &:after {
+                position: absolute;
+                z-index: 2;
+                content: '';
+                display: block;
+                width: 60px;
+                height: 15px;
+                left: 50%;
+                top: 50%;
+                margin: -7px 0 0 -30px;
+                background: url('~@/assets/preloader.svg') no-repeat center bottom;
+                background-size: contain;
+            }
+        }
     }
 </style>
 

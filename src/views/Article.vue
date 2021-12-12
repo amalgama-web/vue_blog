@@ -1,10 +1,11 @@
 <template>
-    <div class="l-container" v-if="isDataLoaded">
+    <div class="l-container">
         <router-link to="/">
             <div class="button">← К списку статей</div>
         </router-link>
         
-        <div class="article-view">
+        <div class="preloader" v-if="!isDataLoaded"></div>
+        <div class="article-view" v-else>
             <div class="article-view__head">
                 {{ currentArticle.name }}
             </div>
@@ -26,8 +27,8 @@
             <form-new-comment v-show="isCommentFormOpen"
                               @comment-created="pushComment"
                               :article-id="currentArticle.id"></form-new-comment>
-        
         </div>
+        
     </div>
 </template>
 
@@ -67,9 +68,11 @@
         
         created() {
             
-            this.currentArticle = fakeApi.getArticleByID(this.$route.params.id);
+            fakeApi.getArticleByID(this.$route.params.id).then((response) => {
+                this.currentArticle = response;
+                this.isDataLoaded = true;
+            });
             
-            this.isDataLoaded = true;
             
         }
     }
@@ -92,5 +95,35 @@
             margin-bottom: 10px;
         }
         
+    }
+
+    .comment-list {
+        margin-bottom: 40px;
+    
+        &__empty {
+            font-size: 13px;
+            color: #999;
+            font-style: italic;
+        }
+    }
+
+    .comment-item {
+        font-size: 13px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    
+        &__name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        &__text {
+            margin-bottom: 10px;
+        }
+    
+        & + .comment-item {
+            margin-top: 15px;
+        }
     }
 </style>
