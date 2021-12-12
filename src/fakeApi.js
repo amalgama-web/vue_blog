@@ -12,9 +12,7 @@ export const fakeApi = {
         return jsonStr ? JSON.parse(jsonStr) : [];
     },
 
-    getArticles() {
-        let response = this._getArticles();
-
+    _createPomise(response) {
         return new Promise((resolve) => {
             setTimeout( () => {
                 resolve(response);
@@ -22,14 +20,16 @@ export const fakeApi = {
         });
     },
 
+    getArticles() {
+        let response = this._getArticles();
+
+        return this._createPomise(response);
+    },
+
     getArticleByID(articleID) {
         let articles = this._getArticles();
         let response = articles.find( item => item.id === articleID);
-        return new Promise((resolve) => {
-            setTimeout( () => {
-                resolve(response);
-            }, this._getRandTimeout() );
-        });
+        return this._createPomise(response);
     },
 
     addArticle(newArticleData) {
@@ -44,11 +44,7 @@ export const fakeApi = {
 
         let response = newArticleData.id;
 
-        return new Promise((resolve) => {
-            setTimeout( () => {
-                resolve(response);
-            }, this._getRandTimeout() );
-        });
+        return this._createPomise(response);
     },
 
     addComment(newCommentData, articleID) {
@@ -63,11 +59,7 @@ export const fakeApi = {
         localStorage.setItem('articles', JSON.stringify(articles));
 
         let response = newCommentData;
-        return new Promise((resolve) => {
-            setTimeout( () => {
-                resolve(response);
-            }, this._getRandTimeout() );
-        });
+        return this._createPomise(response);
     },
 
     removeArticle(articleID) {

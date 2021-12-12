@@ -10,8 +10,11 @@
                 </router-link>
             </div>
             
-            <div class="preloader" v-if="!isDataLoaded"></div>
-            <ul class="article-items" v-else>
+            <div class="preloader-wrap" v-if="!isDataLoaded">
+                <div class="preloader" ></div>
+            </div>
+            
+            <ul class="article-items" v-else-if="articleList.length">
                 <li class="article-item"
                      v-for="article in articleList"
                      :key="article.id"
@@ -26,6 +29,15 @@
                     </div>
                 </li>
             </ul>
+            
+            <div class="article-list__empty" v-else>
+                <p>
+                    Вы еще не добавили ни одной статьи
+                </p>
+                <router-link to="/create">
+                    <div class="button">Добавить статью</div>
+                </router-link>
+            </div>
             
         </div>
     </section>
@@ -69,6 +81,19 @@
     .article-list {
         &__head {
             font-size: 30px;
+        }
+        &__empty {
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            justify-content: center;
+            align-items: center;
+            max-width: 500px;
+            margin: 0 auto;
+            font-style: italic;
+            
+            font-size: 20px;
+            color: #bbb;
         }
     }
     

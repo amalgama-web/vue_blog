@@ -4,7 +4,9 @@
             <div class="button">← К списку статей</div>
         </router-link>
         
-        <div class="preloader" v-if="!isDataLoaded"></div>
+        <div class="preloader-wrap" v-if="!isDataLoaded">
+            <div class="preloader"></div>
+        </div>
         <div class="article-view" v-else>
             <div class="article-view__head">
                 {{ currentArticle.name }}

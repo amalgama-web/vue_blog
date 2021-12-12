@@ -129,6 +129,8 @@
         outline: none;
         
         font-size: 14px;
+        font-weight: 400;
+        font-style: normal;
         color: #fff;
         
         transition: all linear 150ms;
@@ -172,6 +174,14 @@
         font-style: italic;
     }
     
+    .preloader-wrap {
+        display: flex;
+        min-height: 400px;
+        justify-content: center;
+        align-items: center;
+        max-width: 500px;
+        margin: 0 auto;
+    }
     .preloader {
         display: block;
         width: 60px;
