@@ -81,6 +81,7 @@
     textarea {
         padding: 10px;
         resize: none;
+        height: 200px;
     }
     
     input {

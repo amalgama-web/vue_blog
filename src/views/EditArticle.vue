@@ -1,23 +1,25 @@
 <template>
     <section class="l-container">
-        
+    
         <router-link to="/" class="button">
             ← К списку статей
         </router-link>
     
-        <div class="article-created" v-if="isArticleCreated">
-            <div class="create-article__head">Ваша статья опубликована</div>
-            <p>Вы можете просмотреть ее и при необходимости отредактировать:</p>
-            <router-link class="button" :to="{ name: 'Article', params: { id: newArticleId } }">
+        <div class="article-created" v-if="isArticleUpdated">
+            <div class="create-article__head">Ваша статья отредактирована</div>
+            <p>Изменения в статью внесены</p>
+            <router-link class="button" :to="{ name: 'Article', params: { id: editedArticleId } }">
                 Просмотреть статью
             </router-link>
         </div>
-        
+    
         <div class="create-article" v-else>
-            <div class="create-article__head">Создать новую запись</div>
-            <form-edit-article @article-created="onArticleCreated"></form-edit-article>
+            <div class="create-article__head">Редактировать статью</div>
+            <form-edit-article @article-created="onArticleUpdate"
+                               :preload-article-id="editedArticleId">
+            </form-edit-article>
         </div>
-        
+    
     </section>
 </template>
 
@@ -30,14 +32,13 @@
         },
         data() {
             return {
-                isArticleCreated: false,
-                newArticleId: null
+                isArticleUpdated: false,
+                editedArticleId: this.$route.params.id
             }
         },
         methods: {
-            onArticleCreated(newArticleId) {
-                this.newArticleId = newArticleId;
-                this.isArticleCreated = true;
+            onArticleUpdate() {
+                this.isArticleUpdated = true;
             }
         }
     }

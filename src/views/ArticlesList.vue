@@ -5,8 +5,8 @@
             
             <div class="opposite-header">
                 <div class="article-list__head">Список статей</div>
-                <router-link to="/create">
-                    <div class="button">Добавить статью</div>
+                <router-link to="/create" class="button">
+                    Добавить статью
                 </router-link>
             </div>
             
@@ -19,12 +19,15 @@
                      v-for="article in articleList"
                      :key="article.id"
                      @click="openArticle(article.id)">
+                    
                     <div class="article-item__name">{{article.name}}</div>
                     <div class="article-item__text">{{article.shortText}}</div>
         
                     <div class="article-item__buttons">
                         <div class="article-item__comment-count">Комментариев: {{article.commentList.length}}</div>
-                        <div class="button _green _sm" @click.stop>Редактировать</div>
+                        <router-link class="button _green _sm" :to="{ name: 'EditArticle', params: { id: article.id } }" @click.stop>
+                            Редактировать
+                        </router-link>
                         <div class="button _red _sm" @click.stop="removeArticle(article.id)">Удалить запись</div>
                     </div>
                 </li>
@@ -34,8 +37,8 @@
                 <p>
                     Вы еще не добавили ни одной статьи
                 </p>
-                <router-link to="/create">
-                    <div class="button">Добавить статью</div>
+                <router-link to="/create" class="button">
+                    Добавить статью
                 </router-link>
             </div>
             

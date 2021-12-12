@@ -2,19 +2,19 @@
     <Form class="form-edit-article" @submit="publishArticle" :class="{'_form-processing': isFormInProcess}">
         <div class="form-edit-article__group">
             <div class="field-label">Заголовок статьи:</div>
-            <Field name="name" type="text" placeholder="Заголовок вашей статьи" :rules="isRequired"/>
+            <Field v-model="name" name="name" type="text" placeholder="Заголовок вашей статьи" :rules="isRequired"/>
             <ErrorMessage class="error-message form-edit-article__error" name="name"></ErrorMessage>
         </div>
     
         <div class="form-edit-article__group">
             <div class="field-label">Текст превью:</div>
-            <Field name="shortText" as="textarea" placeholder="Превью" :rules="isRequired"/>
+            <Field v-model="shortText" name="shortText" as="textarea" placeholder="Превью" :rules="isRequired"/>
             <ErrorMessage class="error-message form-edit-article__error" name="shortText"></ErrorMessage>
         </div>
     
         <div class="form-edit-article__group">
             <div class="field-label">Полный текст:</div>
-            <Field name="fullText" as="textarea" placeholder="Полный текст вашей статьи" :rules="isRequired"/>
+            <Field v-model="fullText" name="fullText" as="textarea" placeholder="Полный текст вашей статьи" :rules="isRequired"/>
             <ErrorMessage class="error-message form-edit-article__error" name="fullText"></ErrorMessage>
         </div>
     
@@ -34,8 +34,15 @@
             Field,
             ErrorMessage
         },
+        
+        props: ['preloadArticleId'],
+        
         data() {
             return {
+                name: '',
+                shortText: '',
+                fullText: '',
+                
                 isFormInProcess: false
             }
         },
@@ -44,6 +51,20 @@
             publishArticle(values, formActions) {
                 this.isFormInProcess = true;
                 
+                if (this.preloadArticleId !== undefined) {
+                    fakeApi.updateArticle({
+                        id: this.preloadArticleId,
+                        name: values.name,
+                        shortText: values.shortText,
+                        fullText: values.fullText
+                    }).then(() => {
+                        this.isFormInProcess = false;
+                        formActions.resetForm();
+                        this.$emit('article-created', this.preloadArticleId)
+                    });
+                    return;
+                }
+
                 fakeApi.addArticle({
                     name: values.name,
                     shortText: values.shortText,
@@ -53,7 +74,6 @@
                     formActions.resetForm();
                     this.$emit('article-created', newArticleId)
                 });
-                
             },
             isRequired(value) {
                 if (!value) {
@@ -62,6 +82,18 @@
                 return true;
             },
         },
+        created() {
+            if (this.preloadArticleId === undefined) return;
+            
+            this.isFormInProcess = true;
+            
+            fakeApi.getArticleByID(this.preloadArticleId).then((response) => {
+                this.isFormInProcess = false;
+                this.name = response.name;
+                this.shortText = response.shortText;
+                this.fullText = response.fullText;
+            });
+        }
     }
 </script>
 

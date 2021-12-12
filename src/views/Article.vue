@@ -1,7 +1,7 @@
 <template>
     <div class="l-container">
-        <router-link to="/">
-            <div class="button">← К списку статей</div>
+        <router-link to="/" class="button">
+            ← К списку статей
         </router-link>
         
         <div class="preloader-wrap" v-if="!isDataLoaded">
