@@ -22,9 +22,11 @@
 </script>
 
 <style lang="less">
+    @color-text: #2d2d2d;
     * {
         box-sizing: border-box;
     }
+    
     
     .link-color(@color, @color-hover) {
         &:focus {
@@ -90,7 +92,6 @@
         }
     }
     
-    @color-text: #2d2d2d;
     body {
         background-color: #fff;
         margin: 0;
@@ -302,6 +303,15 @@
         & + .comment-item {
             margin-top: 15px;
         }
+    }
+
+    .preloader {
+        display: block;
+        width: 60px;
+        height: 15px;
+        margin: 30px auto;
+        background: url('~@/assets/loading.svg') no-repeat center bottom;
+        background-size: contain;
     }
 
 </style>

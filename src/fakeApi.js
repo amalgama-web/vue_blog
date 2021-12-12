@@ -1,4 +1,4 @@
-function createUniqID() {
+function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
@@ -16,14 +16,14 @@ export const fakeApi = {
 
     addArticle(newArticleData) {
         let articles = this.getArticles();
-        newArticleData.id = createUniqID();
+        newArticleData.id = generateId();
         newArticleData.commentList = [];
 
         articles.push(newArticleData);
 
         localStorage.setItem('articles', JSON.stringify(articles));
 
-        return newArticleData;
+        return newArticleData.id;
     },
 
     removeArticle(articleID) {
@@ -37,7 +37,7 @@ export const fakeApi = {
     },
 
     addComment(newCommentData, articleID) {
-        newCommentData.id = createUniqID();
+        newCommentData.id = generateId();
         newCommentData.childComments = [];
 
         let articles = this.getArticles();

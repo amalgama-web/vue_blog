@@ -19,7 +19,7 @@
         </div>
     
         <div class="form-new-article__group">
-            <button class="button form-new-article__submit">Создать статью</button>
+            <button class="button form-new-article__submit">Опубликовать статью</button>
         </div>
     </Form>
 </template>
@@ -40,19 +40,23 @@
         },
 
         methods: {
+            publishArticle(values, formActions) {
+                let newArticleData = fakeApi.addArticle({
+                    name: values.name,
+                    shortText: values.shortText,
+                    fullText: values.fullText
+                });
+
+                formActions.resetForm();
+                
+                this.$router.push({ name: 'Article', params: { id: newArticleData } });
+            },
             isRequired(value) {
                 if (!value) {
                     return 'Это поле обязательно';
                 }
                 return true;
             },
-            publishArticle(values) {
-                fakeApi.addArticle({
-                    name: values.name,
-                    shortText: values.shortText,
-                    fullText: values.fullText
-                });
-            }
         },
     }
 </script>
