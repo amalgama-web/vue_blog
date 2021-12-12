@@ -1,5 +1,5 @@
 <template>
-    <Form class="comment-form" @submit="addComment">
+    <Form class="comment-form" @submit="addComment" :class="{'_form-processing': isFormInProcess}">
     
         <div class="comment-form__group">
             <div class="field-label">Ваше имя:</div>
@@ -33,19 +33,21 @@
         
         data() {
             return {
+                isFormInProcess: false
             }
         },
 
         methods: {
             addComment(values, formActions) {
-                const newComment = fakeApi.addComment({
+                this.isFormInProcess = true;
+                fakeApi.addComment({
                     userName: values.userName,
                     text: values.text
-                }, this.articleId);
-
-                formActions.resetForm();
-
-                this.$emit('comment-created', newComment);
+                }, this.articleId).then((newComment) => {
+                    this.$emit('comment-created', newComment);
+                    formActions.resetForm();
+                    this.isFormInProcess = false;
+                });
             },
             isRequired(value) {
                 if (!value) {
@@ -59,6 +61,7 @@
 
 <style lang="less">
     .comment-form {
+        position: relative;
         max-width: 400px;
         
         &__group {

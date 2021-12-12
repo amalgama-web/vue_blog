@@ -85,32 +85,6 @@
         &__submit {
             margin-top: 10px;
         }
-        
-        &._form-processing {
-            &:before {
-                position: absolute;
-                z-index: 1;
-                content: '';
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: fade(#fff, 50%);
-            }
-            &:after {
-                position: absolute;
-                z-index: 2;
-                content: '';
-                display: block;
-                width: 60px;
-                height: 15px;
-                left: 50%;
-                top: 50%;
-                margin: -7px 0 0 -30px;
-                background: url('~@/assets/preloader.svg') no-repeat center bottom;
-                background-size: contain;
-            }
-        }
     }
 </style>
 
