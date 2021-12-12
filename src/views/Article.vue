@@ -60,7 +60,7 @@
             removeComment(commentID) {
                 fakeApi.removeComment(commentID, this.currentArticle.id);
 
-                let indexToRemove = this.commentList.findIndex(item => item.id === commentID );
+                let indexToRemove = this.currentArticle.commentList.findIndex(item => item.id === commentID );
                 this.currentArticle.commentList.splice(indexToRemove, 1);
             }
         },

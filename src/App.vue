@@ -167,7 +167,7 @@
         justify-content: center;
         
         height: 50px;
-        background-color: cornflowerblue;
+        
         padding: 10px 20px;
         
         border-radius: 4px;
@@ -178,27 +178,23 @@
         color: #fff;
         
         .transited();
-        
-        &:hover {
-            background-color: lighten(cornflowerblue, 5%);
-        }
+    
+        background-color: cornflowerblue;
+        &:hover { background-color: lighten(cornflowerblue, 5%); }
+        &:active { background-color: cornflowerblue; }
         
         cursor: pointer;
         
         &._red {
             background-color: firebrick;
-            
-            &:hover {
-                background-color: lighten(firebrick, 5%);
-            }
+            &:hover { background-color: lighten(firebrick, 5%); }
+            &:active { background-color: firebrick; }
         }
         
         &._green {
             background-color: mediumseagreen;
-            
-            &:hover {
-                background-color: lighten(mediumseagreen, 5%);
-            }
+            &:hover { background-color: lighten(mediumseagreen, 5%); }
+            &:active { background-color: mediumseagreen; }
         }
         
         &._sm {
