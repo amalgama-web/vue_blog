@@ -1,23 +1,24 @@
 <template>
     <section class="l-container">
+        
         <router-link to="/">
             <div class="button">← К списку статей</div>
         </router-link>
+        
         <div class="create-article">
             <div class="create-article__head">Создать новую запись</div>
-            
-            <form-new-article></form-new-article>
-        
+            <form-edit-article></form-edit-article>
         </div>
+        
     </section>
 </template>
 
 <script>
-    import FormNewArticle from '../components/form-new-article'
+    import FormEditArticle from '../components/form-edit-article'
 
     export default {
         components: {
-            FormNewArticle
+            FormEditArticle
         }
     }
 </script>

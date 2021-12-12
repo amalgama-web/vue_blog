@@ -13,7 +13,6 @@
             </div>
             
             <div class="article-view__subhead">Комментарии:</div>
-            
             <div class="comment-list">
                 <div class="comment-list__empty" v-if="!currentArticle.commentList.length">Комментариев еще нет. Будьте первым</div>
                 <div class="comment-item" v-for="comment in currentArticle.commentList" :key="comment.id">
@@ -24,34 +23,26 @@
             </div>
             
             <div class="button" @click="openCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
-            
-            <div class="comment-form" v-show="isCommentFormOpen">
-                <div class="comment-form__group">
-                    <div class="field-label">Ваше имя:</div>
-                    <input type="text" v-model="commentFormName">
-                </div>
-                <div class="comment-form__group">
-                    <div class="field-label">Ваш комментарий:</div>
-                    <textarea v-model="commentFormText" name="" id="" cols="30" rows="10"></textarea>
-                </div>
-                <div class="button" @click="addComment">Отправить</div>
-            </div>
+            <form-new-comment v-show="isCommentFormOpen"
+                              @comment-created="pushComment"
+                              :article-id="currentArticle.id"></form-new-comment>
         
         </div>
     </div>
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js'
+    import { fakeApi } from '../fakeApi.js';
+    import FormNewComment from '../components/form-new-comment';
+    
     export default {
+        components: {
+            FormNewComment
+        },
         data() {
             return {
-                isDataLoaded: false,
                 currentArticle: null,
-
-                commentList: [],
-                commentFormName: '',
-                commentFormText: '',
+                isDataLoaded: false,
                 isCommentFormOpen: false,
             }
         },
@@ -60,20 +51,12 @@
             openCommentForm() {
                 this.isCommentFormOpen = true;
             },
-
-            addComment() {
-                let newComment = fakeApi.addComment({
-                    userName: this.commentFormName,
-                    text: this.commentFormText
-                }, this.currentArticle.id);
-
+            
+            pushComment(newComment) {
                 this.currentArticle.commentList.push(newComment);
-
-                this.commentFormName = '';
-                this.commentFormText = '';
                 this.isCommentFormOpen = false;
             },
-
+            
             removeComment(commentID) {
                 fakeApi.removeComment(commentID, this.currentArticle.id);
 
@@ -83,8 +66,11 @@
         },
         
         created() {
+            
             this.currentArticle = fakeApi.getArticleByID(this.$route.params.id);
+            
             this.isDataLoaded = true;
+            
         }
     }
 </script>

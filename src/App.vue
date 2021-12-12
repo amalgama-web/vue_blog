@@ -9,8 +9,10 @@
 </template>
 
 <script>
+
     export default {
-        components: {},
+        components: {
+        },
         data() {
         },
         methods: {},
@@ -114,6 +116,7 @@
         
         
         .transited();
+        .placeholder-color(#aaa);
         
         &:focus {
             border-color: darken(#ccc, 10%);
@@ -153,6 +156,11 @@
         }
     }
     
+    .error-message {
+        font-size: 12px;
+        font-style: italic;
+        color: orangered;
+    }
     .button {
         display: inline-flex;
         align-items: center;
@@ -166,6 +174,7 @@
         border: none;
         outline: none;
         
+        font-size: 14px;
         color: #fff;
         
         .transited();
@@ -267,14 +276,6 @@
         font-size: 12px;
         color: #666;
         font-style: italic;
-    }
-    
-    .comment-form {
-        max-width: 400px;
-        
-        &__group {
-            margin-bottom: 20px;
-        }
     }
     
     .comment-list {
