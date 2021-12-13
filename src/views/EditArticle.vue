@@ -5,12 +5,13 @@
             ← К списку статей
         </router-link>
     
-        <div class="article-created" v-if="isArticleUpdated">
-            <div class="create-article__head">Ваша статья отредактирована</div>
-            <p>Изменения в статью внесены</p>
-            <router-link class="button" :to="{ name: 'Article', params: { id: editedArticleId } }">
-                Просмотреть статью
-            </router-link>
+        <div class="article-success" v-if="isArticleUpdated">
+            <div class="article-success__head">Ваша статья отредактирована</div>
+            <div class="article-success__buttons">
+                <router-link class="button" :to="{ name: 'Article', params: { id: editedArticleId } }">
+                    Просмотреть статью
+                </router-link>
+            </div>
         </div>
     
         <div class="create-article" v-else>
@@ -45,16 +46,5 @@
 </script>
 
 <style lang="less">
-    .create-article {
-        padding: 40px 0;
-        
-        &__head {
-            font-size: 30px;
-            margin-bottom: 30px;
-        }
-    }
-    .article-created {
-        padding: 40px 0;
-    }
 </style>
 

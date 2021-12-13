@@ -20,8 +20,14 @@ export const fakeApi = {
         });
     },
 
-    getArticles() {
-        let response = this._getArticles();
+    getArticles(start, end) {
+        let articles = this._getArticles();
+        let outputArticles = articles.slice(start - 1, end);
+
+        let response = {
+            articles: outputArticles,
+            length: articles.length
+        };
 
         return this._createPromise(response);
     },

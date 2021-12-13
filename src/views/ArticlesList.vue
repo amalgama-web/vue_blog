@@ -10,7 +10,7 @@
                 </router-link>
             </div>
             
-            <div class="preloader-wrap" v-if="!isDataLoaded">
+            <div class="preloader-wrap" v-if="!isInitialDataLoaded">
                 <div class="preloader" ></div>
             </div>
             
@@ -32,6 +32,11 @@
                         <div class="button _red _sm" @click.stop="removeArticle(article.id)">Удалить запись</div>
                     </div>
                 </li>
+                
+                <li ref="additionalLoadingMarker"></li>
+                <li class="article-additional-preloader" v-show="isAdditionalLoadingActive">
+                    <div class="preloader"></div>
+                </li>
             </ul>
             
             <div class="article-list__empty" v-else>
@@ -52,33 +57,81 @@
     export default {
         data() {
             return {
-                isDataLoaded: false,
+                isInitialDataLoaded: false,
                 articleList: [],
+                
+                currentMaxIndex: 5,
+                articlesTotalLength: null,
+                isAdditionalLoadingActive: false,
             }
         },
 
         methods: {
-            openArticle(articleID) {
-                this.$router.push({ name: 'Article', params: { id: articleID } });
+            openArticle(articleId) {
+                this.$router.push({ name: 'Article', params: { id: articleId } });
             },
 
-            removeArticle(articleID) {
-                let indexForRemove = this.articleList.findIndex(item => item.id === articleID );
+            removeArticle(articleId) {
+                let indexForRemove = this.articleList.findIndex(item => item.id === articleId );
                 let articleForRemove = this.articleList[indexForRemove];
+                
                 articleForRemove.inProcessing = true;
                 
-                fakeApi.removeArticle(articleID).then(() => {
+                fakeApi.removeArticle(articleId).then(() => {
                     this.articleList.splice(indexForRemove, 1);
-                    articleForRemove.inProcessing = true;
+                    this.currentMaxIndex -= 1;
                 });
+            },
+            
+            startLoadingObserver() {
+                if( !this.$refs.additionalLoadingMarker ) return;
+
+                let observer = new IntersectionObserver( (entries) => {
+                    if(entries[0].intersectionRatio !== 1) return;
+                    this.additionalLoading();
+                }, {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 1
+                });
+                observer.observe(this.$refs.additionalLoadingMarker);
+            },
+            
+            destroyLoadingObserver() {
+            
+            },
+            
+            additionalLoading() {
+                if (this.currentMaxIndex >= this.articlesTotalLength) {
+                    this.destroyLoadingObserver();
+                    return;
+                }
                 
+                this.isAdditionalLoadingActive = true;
+                fakeApi.getArticles(this.currentMaxIndex + 1, this.currentMaxIndex + 5).then((response) => {
+                    this.articleList.push(...response.articles);
+                    this.articlesTotalLength = response.length;
+                    this.isAdditionalLoadingActive = false;
+                    this.currentMaxIndex += 5;
+                });
             },
         },
         created() {
-            fakeApi.getArticles().then((response) => {
-                this.articleList = response;
-                this.isDataLoaded = true;
+            fakeApi.getArticles(1, 5).then((response) => {
+                this.articleList = response.articles;
+                this.articlesTotalLength = response.length;
+                this.isInitialDataLoaded = true;
+                
+                if(response.length <= 5) return;
+                
+                this.$nextTick( () => {
+                    this.startLoadingObserver();
+                });
             });
+        },
+        
+        mounted() {
+        
         }
     }
 
@@ -162,5 +215,11 @@
                 color: #3676e8;
             }
         }
+    }
+    .article-additional-preloader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50px;
     }
 </style>
