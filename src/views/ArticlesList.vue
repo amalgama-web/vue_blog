@@ -74,8 +74,8 @@
             },
 
             removeArticle(articleId) {
-                let indexForRemove = this.articleList.findIndex(item => item.id === articleId );
-                let articleForRemove = this.articleList[indexForRemove];
+                const indexForRemove = this.articleList.findIndex(item => item.id === articleId );
+                const articleForRemove = this.articleList[indexForRemove];
                 
                 articleForRemove.isInProcessing = true;
                 

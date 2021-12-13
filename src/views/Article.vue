@@ -80,8 +80,8 @@
             },
             
             removeComment(commentId) {
-                let indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
-                let commentForRemove = this.currentArticle.commentList[indexForRemove];
+                const indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
+                const commentForRemove = this.currentArticle.commentList[indexForRemove];
 
                 commentForRemove.isInProcessing = true;
                 
