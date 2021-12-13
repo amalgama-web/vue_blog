@@ -3,8 +3,10 @@
         <div class="preloader"></div>
     </div>
     
-    <header class="l-container header">
-        <div class="header__title">Личный блог</div>
+    <header class="header">
+        <div class="l-section">
+            <div class="header__title">Тестовое задание блог</div>
+        </div>
     </header>
     
     <router-view></router-view>
@@ -118,13 +120,12 @@
     
     .header {
         background-color: #eee;
-        padding-top: 40px;
-        padding-bottom: 40px;
+        padding-top: 15px;
+        padding-bottom: 15px;
         
         &__title {
             text-align: center;
-            font-size: 30px;
-            font-weight: 700;
+            font-size: 25px;
         }
     }
     

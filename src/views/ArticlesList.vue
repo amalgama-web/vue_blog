@@ -53,16 +53,18 @@
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js'
+    import { fakeApi } from '../fakeApi.js';
+    
     export default {
         data() {
             return {
                 isInitialDataLoaded: false,
+                isAdditionalLoadingActive: false,
                 articleList: [],
-                
+
                 currentMaxIndex: 5,
                 articlesTotalLength: null,
-                isAdditionalLoadingActive: false,
+                observer: null
             }
         },
 
@@ -86,7 +88,7 @@
             startLoadingObserver() {
                 if( !this.$refs.additionalLoadingMarker ) return;
 
-                let observer = new IntersectionObserver( (entries) => {
+                this.observer = new IntersectionObserver( (entries) => {
                     if(entries[0].intersectionRatio !== 1) return;
                     this.additionalLoading();
                 }, {
@@ -94,11 +96,12 @@
                     rootMargin: '0px',
                     threshold: 1
                 });
-                observer.observe(this.$refs.additionalLoadingMarker);
+                this.observer.observe(this.$refs.additionalLoadingMarker);
             },
             
             destroyLoadingObserver() {
-            
+                this.observer.disconnect();
+                this.observer = null;
             },
             
             additionalLoading() {
