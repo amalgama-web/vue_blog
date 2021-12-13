@@ -14,9 +14,9 @@
                 <div class="preloader" ></div>
             </div>
             
-            <ul class="article-items" v-else-if="articleList.length">
+            <ul class="article-items" v-else-if="articlesList.length">
                 <li class="article-item"
-                     v-for="article in articleList"
+                     v-for="article in articlesList"
                      :key="article.id"
                      :class="{'_element-processing': article.isInProcessing}"
                      @click="openArticle(article.id)">
@@ -60,9 +60,9 @@
             return {
                 isInitialDataLoaded: false,
                 isAdditionalLoadingActive: false,
-                articleList: [],
+                articlesList: [],
 
-                currentMaxIndex: 5,
+                lastLoadedArticleIndex: 5,
                 articlesTotalLength: null,
                 observer: null
             }
@@ -74,18 +74,18 @@
             },
 
             removeArticle(articleId) {
-                const indexForRemove = this.articleList.findIndex(item => item.id === articleId );
-                const articleForRemove = this.articleList[indexForRemove];
+                const indexForRemove = this.articlesList.findIndex(item => item.id === articleId );
+                const articleForRemove = this.articlesList[indexForRemove];
                 
                 articleForRemove.isInProcessing = true;
                 
                 fakeApi.removeArticle(articleId).then(() => {
-                    this.articleList.splice(indexForRemove, 1);
-                    this.currentMaxIndex -= 1;
+                    this.articlesList.splice(indexForRemove, 1);
+                    this.lastLoadedArticleIndex -= 1;
                 });
             },
             
-            startLoadingObserver() {
+            createLoadingObserver() {
                 if( !this.$refs.additionalLoadingMarker ) return;
 
                 this.observer = new IntersectionObserver( (entries) => {
@@ -105,30 +105,30 @@
             },
             
             additionalLoading() {
-                if (this.currentMaxIndex >= this.articlesTotalLength) {
+                if (this.lastLoadedArticleIndex >= this.articlesTotalLength) {
                     this.destroyLoadingObserver();
                     return;
                 }
                 
                 this.isAdditionalLoadingActive = true;
-                fakeApi.getArticlesList(this.currentMaxIndex + 1, this.currentMaxIndex + 5).then((response) => {
-                    this.articleList.push(...response.articles);
+                fakeApi.getArticlesList(this.lastLoadedArticleIndex + 1, this.lastLoadedArticleIndex + 5).then((response) => {
+                    this.articlesList.push(...response.articles);
                     this.articlesTotalLength = response.length;
                     this.isAdditionalLoadingActive = false;
-                    this.currentMaxIndex += 5;
+                    this.lastLoadedArticleIndex += 5;
                 });
             },
         },
         created() {
             fakeApi.getArticlesList(1, 5).then((response) => {
-                this.articleList = response.articles;
+                this.articlesList = response.articles;
                 this.articlesTotalLength = response.length;
                 this.isInitialDataLoaded = true;
                 
                 if(response.length <= 5) return;
                 
                 this.$nextTick( () => {
-                    this.startLoadingObserver();
+                    this.createLoadingObserver();
                 });
             });
         },
