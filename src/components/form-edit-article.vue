@@ -60,22 +60,21 @@
                 
                 if (this.preloadArticleId !== undefined) {
                     fakeApi.updateArticle({
-                        id: this.preloadArticleId,
-                        name: values.name,
-                        shortText: values.shortText,
-                        fullText: values.fullText
-                    }).then(() => {
+                        name: this.name,
+                        shortText: this.shortText,
+                        fullText: this.fullText
+                    }, this.preloadArticleId).then( (updatedArticleId) => {
                         this.isFormInProcess = false;
                         formActions.resetForm();
-                        this.$emit('article-created', this.preloadArticleId)
+                        this.$emit('article-created', updatedArticleId)
                     });
                     return;
                 }
 
                 fakeApi.addArticle({
-                    name: values.name,
-                    shortText: values.shortText,
-                    fullText: values.fullText
+                    name: this.name,
+                    shortText: this.shortText,
+                    fullText: this.fullText
                 }).then((newArticleId) => {
                     this.isFormInProcess = false;
                     formActions.resetForm();
@@ -94,7 +93,7 @@
             
             this.isFormInProcess = true;
             
-            fakeApi.getArticleByID(this.preloadArticleId).then((response) => {
+            fakeApi.getArticleById(this.preloadArticleId).then((response) => {
                 this.isFormInProcess = false;
                 this.name = response.name;
                 this.shortText = response.shortText;

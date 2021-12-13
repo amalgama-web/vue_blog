@@ -1,27 +1,27 @@
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function getRandTimeout() {
+    return Math.round(Math.random() * 500) + 200;
+}
+
+function getArticles() {
+    let jsonStr = localStorage.getItem('articles');
+    return jsonStr ? JSON.parse(jsonStr) : [];
+}
+
+function createPromise(response) {
+    return new Promise((resolve) => {
+        setTimeout( () => {
+            resolve(response);
+        }, getRandTimeout() );
+    });
+}
+
 export const fakeApi = {
-    _generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    },
-
-    _getRandTimeout() {
-        return Math.round(Math.random() * 500) + 200;
-    },
-    
-    _getArticles() {
-        let jsonStr = localStorage.getItem('articles');
-        return jsonStr ? JSON.parse(jsonStr) : [];
-    },
-
-    _createPromise(response) {
-        return new Promise((resolve) => {
-            setTimeout( () => {
-                resolve(response);
-            }, this._getRandTimeout() );
-        });
-    },
-
-    getArticles(start, end) {
-        let articles = this._getArticles();
+    getArticlesList(start, end) {
+        let articles = getArticles();
         let outputArticles = articles.slice(start - 1, end);
 
         let response = {
@@ -29,19 +29,18 @@ export const fakeApi = {
             length: articles.length
         };
 
-        return this._createPromise(response);
+        return createPromise(response);
     },
 
-    getArticleByID(articleID) {
-        let articles = this._getArticles();
-        let response = articles.find( item => item.id === articleID);
-        return this._createPromise(response);
+    getArticleById(articleId) {
+        let response = getArticles().find( item => item.id === articleId);
+        return createPromise(response);
     },
 
     addArticle(newArticleData) {
-        let articles = this._getArticles();
+        let articles = getArticles();
 
-        newArticleData.id = this._generateId();
+        newArticleData.id = generateId();
         newArticleData.commentList = [];
 
         articles.push(newArticleData);
@@ -50,63 +49,62 @@ export const fakeApi = {
 
         let response = newArticleData.id;
 
-        return this._createPromise(response);
+        return createPromise(response);
     },
 
-    updateArticle(updatedArticleData) {
-        let articles = this._getArticles();
-
-        let updatedArticle  = articles.find( item => item.id === updatedArticleData.id);
+    updateArticle(updatedArticleData, articleId) {
+        let articles = getArticles();
+        let updatedArticle  = articles.find( item => item.id === articleId);
 
         Object.assign(updatedArticle, updatedArticleData);
 
         localStorage.setItem('articles', JSON.stringify(articles));
 
-        let response = true;
+        let response = updatedArticle.id;
 
-        return this._createPromise(response);
+        return createPromise(response);
     },
 
-    addComment(newCommentData, articleID) {
-        newCommentData.id = this._generateId();
+    addComment(newCommentData, articleId) {
+        newCommentData.id = generateId();
         newCommentData.childComments = [];
 
-        let articles = this._getArticles();
-        let currentArticle = articles.find( item => item.id === articleID);
+        let articles = getArticles();
+        let currentArticle = articles.find( item => item.id === articleId);
 
         currentArticle.commentList.push(newCommentData);
 
         localStorage.setItem('articles', JSON.stringify(articles));
 
         let response = newCommentData;
-        return this._createPromise(response);
+        return createPromise(response);
     },
 
-    removeArticle(articleID) {
-        let articles = this._getArticles();
-        let indexToRemove = articles.findIndex(article => article.id === articleID );
+    removeArticle(articleId) {
+        let articles = getArticles();
+        let indexForRemove = articles.findIndex(article => article.id === articleId );
 
-        articles.splice(indexToRemove, 1);
+        articles.splice(indexForRemove, 1);
 
         localStorage.setItem('articles', JSON.stringify(articles));
 
         let response = true;
-        return this._createPromise(response);
+        return createPromise(response);
     },
 
-    removeComment(commentID, articleID) {
-        let articles = this._getArticles();
+    removeComment(commentId, articleId) {
+        let articles = getArticles();
 
-        let currentArticle = articles.find( item => item.id === articleID);
+        let currentArticle = articles.find( item => item.id === articleId);
 
-        let commentIndexToRemove = currentArticle.commentList.findIndex(item => item.id === commentID );
+        let commentIndexForRemove = currentArticle.commentList.findIndex(item => item.id === commentId );
 
-        currentArticle.commentList.splice(commentIndexToRemove, 1);
+        currentArticle.commentList.splice(commentIndexForRemove, 1);
 
         localStorage.setItem('articles', JSON.stringify(articles));
 
         let response = true;
-        return response;
+        return createPromise(response);
     }
 };
 

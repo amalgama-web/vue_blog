@@ -31,7 +31,10 @@
                 <div class="comments__head">Комментарии:</div>
                 <div class="comments__list">
                     <div class="comments__empty" v-if="!currentArticle.commentList.length">Комментариев еще нет. Будьте первым</div>
-                    <div class="comment-item" v-for="comment in currentArticle.commentList" :key="comment.id">
+                    <div class="comment-item"
+                         :class="{'_element-processing': comment.isInProcessing}"
+                         v-for="comment in currentArticle.commentList"
+                         :key="comment.id">
                         <div class="comment-item__name">{{ comment.userName }}</div>
                         <div class="comment-item__text">{{ comment.text }}</div>
                         <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
@@ -76,11 +79,15 @@
                 this.isCommentFormOpen = false;
             },
             
-            removeComment(commentID) {
-                fakeApi.removeComment(commentID, this.currentArticle.id);
+            removeComment(commentId) {
+                let indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
+                let commentForRemove = this.currentArticle.commentList[indexForRemove];
 
-                let indexToRemove = this.currentArticle.commentList.findIndex(item => item.id === commentID );
-                this.currentArticle.commentList.splice(indexToRemove, 1);
+                commentForRemove.isInProcessing = true;
+                
+                fakeApi.removeComment(commentId, this.currentArticle.id).then( () => {
+                    this.currentArticle.commentList.splice(indexForRemove, 1);
+                });
             },
 
             removeArticle(articleId) {
@@ -93,7 +100,7 @@
         },
         
         created() {
-            fakeApi.getArticleByID(this.$route.params.id).then((response) => {
+            fakeApi.getArticleById(this.$route.params.id).then((response) => {
                 this.currentArticle = response;
                 this.isDataLoaded = true;
             });
@@ -139,11 +146,14 @@
     }
 
     .comment-item {
-        font-size: 13px;
-        line-height: 20px;
+        position: relative;
+        
         padding: 20px;
         border-radius: 4px;
         background-color: #f5f5f5;
+    
+        font-size: 13px;
+        line-height: 20px;
     
         &__name {
             font-weight: bold;

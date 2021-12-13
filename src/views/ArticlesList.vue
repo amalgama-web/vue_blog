@@ -18,7 +18,7 @@
                 <li class="article-item"
                      v-for="article in articleList"
                      :key="article.id"
-                     :class="{'_element-processing': article.inProcessing}"
+                     :class="{'_element-processing': article.isInProcessing}"
                      @click="openArticle(article.id)">
                     
                     <div class="article-item__name">{{article.name}}</div>
@@ -77,7 +77,7 @@
                 let indexForRemove = this.articleList.findIndex(item => item.id === articleId );
                 let articleForRemove = this.articleList[indexForRemove];
                 
-                articleForRemove.inProcessing = true;
+                articleForRemove.isInProcessing = true;
                 
                 fakeApi.removeArticle(articleId).then(() => {
                     this.articleList.splice(indexForRemove, 1);
@@ -111,7 +111,7 @@
                 }
                 
                 this.isAdditionalLoadingActive = true;
-                fakeApi.getArticles(this.currentMaxIndex + 1, this.currentMaxIndex + 5).then((response) => {
+                fakeApi.getArticlesList(this.currentMaxIndex + 1, this.currentMaxIndex + 5).then((response) => {
                     this.articleList.push(...response.articles);
                     this.articlesTotalLength = response.length;
                     this.isAdditionalLoadingActive = false;
@@ -120,7 +120,7 @@
             },
         },
         created() {
-            fakeApi.getArticles(1, 5).then((response) => {
+            fakeApi.getArticlesList(1, 5).then((response) => {
                 this.articleList = response.articles;
                 this.articlesTotalLength = response.length;
                 this.isInitialDataLoaded = true;
@@ -132,10 +132,6 @@
                 });
             });
         },
-        
-        mounted() {
-        
-        }
     }
 
 </script>
