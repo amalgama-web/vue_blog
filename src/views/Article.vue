@@ -22,8 +22,8 @@
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js';
-    import { commentsFunctions } from '../commentsFunctions.js';
+    import { fakeApiService } from '../services/fakeApiService';
+    import { commentsService } from '../services/commentsService.js';
     import formNewComment from '../components/form-new-comment';
     import articleBlock from '../components/article-block';
     import commentsBlock from '../components/comments-block';
@@ -59,29 +59,29 @@
             
             addComment(data, parentCommentId) {
                 return new Promise( (resolve) => {
-                    fakeApi
+                    fakeApiService
                         .addComment(data, this.currentArticle.id, parentCommentId)
                         .then( (newComment) => {
                             resolve();
-                            const currentCommentList = commentsFunctions.findCommentListInTree(this.currentArticle.commentList, parentCommentId);
-                            currentCommentList.push(newComment);
+                            const commentList = commentsService.getNodeData(this.currentArticle.commentList, parentCommentId).childList;
+                            commentList.push(newComment);
                         });
                 });
             },
             
             removeComment(commentId) {
-                const treeNode = commentsFunctions.findCommentInTree(this.currentArticle.commentList, commentId);
-                treeNode.list[ treeNode.index ].isInProcessing = true;
-                fakeApi
+                const commentsTreeNode = commentsService.getNodeData(this.currentArticle.commentList, commentId);
+                commentsTreeNode.currentNodeList[ commentsTreeNode.indexInCurrentNode ].isInProcessing = true;
+                fakeApiService
                     .removeComment(this.currentArticle.id, commentId)
                     .then( () => {
-                        treeNode.list.splice(treeNode.index, 1)
+                        commentsTreeNode.currentNodeList.splice(commentsTreeNode.indexInCurrentNode, 1)
                     });
             },
 
             removeArticle(articleId) {
                 this.showPageloader();
-                fakeApi
+                fakeApiService
                     .removeArticle(articleId)
                     .then(() => {
                         this.hidePageloader();
@@ -91,7 +91,7 @@
         },
         
         created() {
-            fakeApi
+            fakeApiService
                 .getArticleById(this.$route.params.id)
                 .then((response) => {
                     this.currentArticle = response;

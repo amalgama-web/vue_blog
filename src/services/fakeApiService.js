@@ -1,4 +1,4 @@
-import { commentsFunctions } from './commentsFunctions';
+import { commentsService } from './commentsService';
 
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -9,12 +9,12 @@ function getRandTimeout() {
 }
 
 function getArticlesFromLS() {
-    const jsonStr = localStorage.getItem('articlesApp');
+    const jsonStr = localStorage.getItem('articlesAppData');
     return jsonStr ? JSON.parse(jsonStr) : [];
 }
 
 function setArticlesToLS(data) {
-    localStorage.setItem('articlesApp', JSON.stringify(data));
+    localStorage.setItem('articlesAppData', JSON.stringify(data));
 }
 
 function createPromise(response) {
@@ -25,7 +25,7 @@ function createPromise(response) {
     });
 }
 
-export const fakeApi = {
+export const fakeApiService = {
     getArticlesList(start, end) {
         const articles = getArticlesFromLS();
         let outputArticles = [];
@@ -88,11 +88,11 @@ export const fakeApi = {
     addComment(newCommentData, articleId, parentCommentId) {
         const articles = getArticlesFromLS();
         const currentArticle = articles.find( item => item.id === articleId);
-        const currentCommentList = commentsFunctions.findCommentListInTree( currentArticle.commentList, parentCommentId );
+        const commentList = commentsService.getNodeData( currentArticle.commentList, parentCommentId ).childList;
 
         newCommentData.id = generateId();
         newCommentData.childComments = [];
-        currentCommentList.push(newCommentData);
+        commentList.push(newCommentData);
 
         setArticlesToLS(articles);
 
@@ -115,9 +115,9 @@ export const fakeApi = {
     removeComment(articleId, commentId) {
         const articles = getArticlesFromLS();
         const currentArticle = articles.find( item => item.id === articleId);
-        const treeNode = commentsFunctions.findCommentInTree(currentArticle.commentList, commentId);
+        const commentsTreeNode = commentsService.getNodeData(currentArticle.commentList, commentId);
 
-        treeNode.list.splice(treeNode.index, 1);
+        commentsTreeNode.currentNodeList.splice( commentsTreeNode.indexInCurrentNode, 1 );
 
         setArticlesToLS(articles);
 

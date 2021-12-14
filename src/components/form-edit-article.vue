@@ -26,9 +26,9 @@
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js'
+    import { fakeApiService } from '../services/fakeApiService'
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import { randomText } from '../randomText.js';
+    import { randomTextService } from '../services/randomTextService';
     
     export default {
         components: {
@@ -51,15 +51,15 @@
 
         methods: {
             autofill() {
-                this.name = randomText.getRandomSingleSentence();
-                this.shortText = randomText.getRandomSentences(5);
-                this.fullText = randomText.getRandomSentences(10);
+                this.name = randomTextService.getRandomSingleSentence();
+                this.shortText = randomTextService.getRandomSentences(5);
+                this.fullText = randomTextService.getRandomSentences(10);
             },
             publishArticle(values, formActions) {
                 this.isFormInProcess = true;
                 
                 if (this.preloadArticleId !== undefined) {
-                    fakeApi.updateArticle({
+                    fakeApiService.updateArticle({
                         name: this.name,
                         shortText: this.shortText,
                         fullText: this.fullText
@@ -71,7 +71,7 @@
                     return;
                 }
 
-                fakeApi.addArticle({
+                fakeApiService.addArticle({
                     name: this.name,
                     shortText: this.shortText,
                     fullText: this.fullText
@@ -93,7 +93,7 @@
             
             this.isFormInProcess = true;
             
-            fakeApi.getArticleById(this.preloadArticleId).then((response) => {
+            fakeApiService.getArticleById(this.preloadArticleId).then((response) => {
                 this.isFormInProcess = false;
                 this.name = response.name;
                 this.shortText = response.shortText;

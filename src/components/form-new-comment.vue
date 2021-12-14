@@ -21,7 +21,7 @@
 
 <script>
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import { randomText } from '../randomText.js';
+    import { randomTextService } from '../services/randomTextService';
 
     export default {
         components: {
@@ -57,8 +57,8 @@
             },
             
             autofill() {
-                this.userName = randomText.getRandomName();
-                this.text = randomText.getRandomSentences(4);
+                this.userName = randomTextService.getRandomName();
+                this.text = randomTextService.getRandomSentences(4);
             },
             
             isRequired(value) {

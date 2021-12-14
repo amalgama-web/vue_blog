@@ -53,7 +53,7 @@
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js';
+    import { fakeApiService } from '../services/fakeApiService';
     
     export default {
         data() {
@@ -79,7 +79,7 @@
                 
                 articleForRemove.isInProcessing = true;
                 
-                fakeApi.removeArticle(articleId).then(() => {
+                fakeApiService.removeArticle(articleId).then(() => {
                     this.articlesList.splice(indexForRemove, 1);
                     this.lastLoadedArticleIndex -= 1;
                 });
@@ -111,7 +111,7 @@
                 }
                 
                 this.isAdditionalLoadingActive = true;
-                fakeApi.getArticlesList(this.lastLoadedArticleIndex + 1, this.lastLoadedArticleIndex + 5).then((response) => {
+                fakeApiService.getArticlesList(this.lastLoadedArticleIndex + 1, this.lastLoadedArticleIndex + 5).then((response) => {
                     this.articlesList.push(...response.articles);
                     this.articlesTotalLength = response.length;
                     this.isAdditionalLoadingActive = false;
@@ -120,7 +120,7 @@
             },
         },
         created() {
-            fakeApi.getArticlesList(1, 5).then((response) => {
+            fakeApiService.getArticlesList(1, 5).then((response) => {
                 this.articlesList = response.articles;
                 this.articlesTotalLength = response.length;
                 this.isInitialDataLoaded = true;
