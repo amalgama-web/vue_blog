@@ -1,6 +1,6 @@
 <template>
     <div class="comments">
-        <div class="comments__head">Комментарии <span v-if="commentsCount">{{ commentsCount }}</span>:</div>
+        <div class="comments__head">Комментарии<span v-if="commentsCount">&nbsp;{{ commentsCount }}</span>:</div>
         <div class="comments__list">
             
             <div class="comments__empty" v-if="!commentList.length">Комментариев еще нет. Будьте первым</div>
