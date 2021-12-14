@@ -31,21 +31,18 @@
                 <div class="comments__head">Комментарии:</div>
                 <div class="comments__list">
                     <div class="comments__empty" v-if="!currentArticle.commentList.length">Комментариев еще нет. Будьте первым</div>
-                    <div class="comment-item"
-                         :class="{'_element-processing': comment.isInProcessing}"
-                         v-for="comment in currentArticle.commentList"
-                         :key="comment.id">
-                        <div class="comment-item__name">{{ comment.userName }}</div>
-                        <div class="comment-item__text">{{ comment.text }}</div>
-                        <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
-                    </div>
+    
+                    <comment-item v-for="comment in currentArticle.commentList"
+                                  :key="comment.id"
+                                  :comment-data="comment"
+                                  :class="{'_element-processing': comment.isInProcessing}">
+                    </comment-item>
+                    
                 </div>
             </div>
     
             <div class="button" @click="openCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
-            <form-new-comment v-show="isCommentFormOpen"
-                              @comment-created="pushComment"
-                              :article-id="currentArticle.id"></form-new-comment>
+            <form-new-comment v-show="isCommentFormOpen"></form-new-comment>
         </div>
         
         
@@ -54,13 +51,27 @@
 
 <script>
     import { fakeApi } from '../fakeApi.js';
+    import { commentsFunctions } from '../commentsFunctions.js';
     import FormNewComment from '../components/form-new-comment';
+    import commentItem from '../components/comment-item';
+
+    
     
     export default {
         components: {
-            FormNewComment
+            FormNewComment,
+            commentItem
         },
+        
+        provide() {
+            return {
+                addComment: this.addComment,
+                removeComment: this.removeComment
+            }
+        },
+        
         inject: ['showPageloader', 'hidePageloader'],
+        
         data() {
             return {
                 currentArticle: null,
@@ -74,20 +85,31 @@
                 this.isCommentFormOpen = true;
             },
             
-            pushComment(newComment) {
-                this.currentArticle.commentList.push(newComment);
-                this.isCommentFormOpen = false;
+            addComment(data, parentCommentId) {
+                return new Promise( (resolve) => {
+                    fakeApi
+                        .addComment(data, this.currentArticle.id, parentCommentId)
+                        .then( (newComment) => {
+                            resolve();
+                            const currentCommentList = commentsFunctions.findCommentListInTree(this.currentArticle.commentList, parentCommentId);
+                            currentCommentList.push(newComment);
+                        });
+                });
             },
             
             removeComment(commentId) {
-                const indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
-                const commentForRemove = this.currentArticle.commentList[indexForRemove];
-
-                commentForRemove.isInProcessing = true;
                 
-                fakeApi.removeComment(commentId, this.currentArticle.id).then( () => {
-                    this.currentArticle.commentList.splice(indexForRemove, 1);
-                });
+                console.log('remove comment');
+                console.log(commentId);
+                
+                // const indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
+                // const commentForRemove = this.currentArticle.commentList[indexForRemove];
+                //
+                // commentForRemove.isInProcessing = true;
+                //
+                // fakeApi.removeComment(commentId, this.currentArticle.id).then( () => {
+                //     this.currentArticle.commentList.splice(indexForRemove, 1);
+                // });
             },
 
             removeArticle(articleId) {
@@ -145,27 +167,5 @@
         }
     }
 
-    .comment-item {
-        position: relative;
-        
-        padding: 20px;
-        border-radius: 4px;
-        background-color: #f5f5f5;
     
-        font-size: 13px;
-        line-height: 20px;
-    
-        &__name {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-    
-        &__text {
-            margin-bottom: 14px;
-        }
-    
-        & + .comment-item {
-            margin-top: 15px;
-        }
-    }
 </style>

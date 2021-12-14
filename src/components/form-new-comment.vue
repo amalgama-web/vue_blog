@@ -1,5 +1,5 @@
 <template>
-    <Form class="comment-form" @submit="addComment" :class="{'_element-processing': isFormInProcess}">
+    <Form class="comment-form" @submit="createComment" :class="{'_element-processing': isFormInProcess}">
     
         <div class="comment-form__group">
             <div class="field-label">Ваше имя:</div>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-    import { fakeApi } from '../fakeApi.js'
     import { Form, Field, ErrorMessage } from 'vee-validate';
     import { randomText } from '../randomText.js';
 
@@ -30,8 +29,9 @@
             Field,
             ErrorMessage
         },
-        
-        props: ['articleId'],
+        inject: ['addComment'],
+
+        props: ['articleId', 'parentCommentId'],
         
         data() {
             return {
@@ -43,21 +43,25 @@
         },
 
         methods: {
+            createComment(values, formActions) {
+                this.isFormInProcess = true;
+                
+                this.addComment({
+                        userName: this.userName,
+                        text: this.text
+                    }, this.parentCommentId)
+                    .then(() => {
+                        formActions.resetForm();
+                        this.isFormInProcess = false;
+                        this.$emit('comment-created');
+                    });
+            },
+            
             autofill() {
                 this.userName = randomText.getRandomName();
                 this.text = randomText.getRandomSentences(4);
             },
-            addComment(values, formActions) {
-                this.isFormInProcess = true;
-                fakeApi.addComment({
-                    userName: values.userName,
-                    text: values.text
-                }, this.articleId).then((newComment) => {
-                    this.$emit('comment-created', newComment);
-                    formActions.resetForm();
-                    this.isFormInProcess = false;
-                });
-            },
+            
             isRequired(value) {
                 if (!value.trim()) {
                     return 'Это поле обязательно';

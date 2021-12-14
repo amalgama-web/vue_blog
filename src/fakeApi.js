@@ -1,3 +1,5 @@
+import { commentsFunctions } from './commentsFunctions';
+
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
@@ -68,7 +70,6 @@ export const fakeApi = {
         setArticlesToLS(articles);
 
         const response = newArticleData.id;
-
         return createPromise(response);
     },
 
@@ -81,18 +82,17 @@ export const fakeApi = {
         setArticlesToLS(articles);
 
         const response = articleForUpdate.id;
-
         return createPromise(response);
     },
 
-    addComment(newCommentData, articleId) {
+    addComment(newCommentData, articleId, parentCommentId) {
         const articles = getArticlesFromLS();
         const currentArticle = articles.find( item => item.id === articleId);
+        const currentCommentList = commentsFunctions.findCommentListInTree( currentArticle.commentList, parentCommentId );
 
         newCommentData.id = generateId();
         newCommentData.childComments = [];
-
-        currentArticle.commentList.push(newCommentData);
+        currentCommentList.push(newCommentData);
 
         setArticlesToLS(articles);
 
