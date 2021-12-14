@@ -21,5 +21,13 @@ export const commentsService = {
 
         }
         return false;
+    },
+    countComments(list) {
+        let counter = 0;
+        for (let i = 0; i < list.length; i++) {
+            counter++;
+            counter += this.countComments(list[i].childComments);
+        }
+        return counter;
     }
 };

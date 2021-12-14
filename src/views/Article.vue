@@ -11,7 +11,7 @@
         <div v-else>
             <article-block :article="currentArticle" @remove-article="removeArticle"></article-block>
     
-            <comments-block :comments-list="currentArticle.commentList"></comments-block>
+            <comments-block :comment-list="currentArticle.commentList"></comments-block>
     
             <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
             <form-new-comment v-show="isCommentFormOpen" @comment-created="toggleCommentForm"></form-new-comment>

@@ -1,11 +1,11 @@
 <template>
     <div class="comments">
-        <div class="comments__head">Комментарии:</div>
+        <div class="comments__head">Комментарии <span v-if="commentsCount">{{ commentsCount }}</span>:</div>
         <div class="comments__list">
             
-            <div class="comments__empty" v-if="!commentsList.length">Комментариев еще нет. Будьте первым</div>
+            <div class="comments__empty" v-if="!commentList.length">Комментариев еще нет. Будьте первым</div>
             
-            <comment-item v-for="comment in commentsList"
+            <comment-item v-for="comment in commentList"
                           :key="comment.id"
                           :comment-data="comment"
                           :class="{'_element-processing': comment.isInProcessing}">
@@ -18,11 +18,19 @@
 
 <script>
     import commentItem from '../components/comment-item';
+    import { commentsService } from "../services/commentsService";
+    
     export default {
         components: {
             commentItem,
         },
-        props: ['commentsList'],
+        props: ['commentList'],
+        computed: {
+            commentsCount() {
+                console.log(this.commentList);
+                return commentsService.countComments( this.commentList, 0 );
+            }
+        }
     }
 </script>
 
