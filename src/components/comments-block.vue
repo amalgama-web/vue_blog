@@ -27,8 +27,7 @@
         props: ['commentList'],
         computed: {
             commentsCount() {
-                console.log(this.commentList);
-                return commentsService.countComments( this.commentList, 0 );
+                return commentsService.countComments( this.commentList );
             }
         }
     }

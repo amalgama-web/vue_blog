@@ -7,6 +7,8 @@
         <div class="preloader-wrap" v-if="!isDataLoaded">
             <div class="preloader"></div>
         </div>
+    
+        <article-not-exist v-else-if="!isArticlesExist"></article-not-exist>
         
         <div v-else>
             <article-block :article="currentArticle" @remove-article="removeArticle"></article-block>
@@ -15,7 +17,6 @@
     
             <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
             <form-new-comment v-show="isCommentFormOpen" @comment-created="toggleCommentForm"></form-new-comment>
-            
         </div>
         
     </div>
@@ -27,10 +28,12 @@
     import formNewComment from '../components/form-new-comment';
     import articleBlock from '../components/article-block';
     import commentsBlock from '../components/comments-block';
+    import articleNotExist from '../components/article-not-exist';
     
     export default {
         components: {
             articleBlock,
+            articleNotExist,
             commentsBlock,
             formNewComment
         },
@@ -49,6 +52,7 @@
                 currentArticle: null,
                 isDataLoaded: false,
                 isCommentFormOpen: false,
+                isArticlesExist: false
             }
         },
 
@@ -94,8 +98,13 @@
             fakeApiService
                 .getArticleById(this.$route.params.id)
                 .then((response) => {
-                    this.currentArticle = response;
-                    this.isDataLoaded = true;
+                    if (response ) {
+                        this.currentArticle = response;
+                        this.isArticlesExist = true;
+                        this.isDataLoaded = true;
+                    } else {
+                        this.isDataLoaded = true;
+                    }
                 });
         }
     }
