@@ -45,7 +45,6 @@
         methods: {
             createComment(values, formActions) {
                 this.isFormInProcess = true;
-                
                 this.addComment({
                         userName: this.userName,
                         text: this.text

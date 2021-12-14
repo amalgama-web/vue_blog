@@ -41,8 +41,8 @@
                 </div>
             </div>
     
-            <div class="button" @click="openCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
-            <form-new-comment v-show="isCommentFormOpen"></form-new-comment>
+            <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
+            <form-new-comment v-show="isCommentFormOpen" @comment-created="toggleCommentForm"></form-new-comment>
         </div>
         
         
@@ -81,8 +81,8 @@
         },
 
         methods: {
-            openCommentForm() {
-                this.isCommentFormOpen = true;
+            toggleCommentForm() {
+                this.isCommentFormOpen = !this.isCommentFormOpen;
             },
             
             addComment(data, parentCommentId) {
@@ -98,34 +98,33 @@
             },
             
             removeComment(commentId) {
-                
-                console.log('remove comment');
-                console.log(commentId);
-                
-                // const indexForRemove = this.currentArticle.commentList.findIndex(item => item.id === commentId );
-                // const commentForRemove = this.currentArticle.commentList[indexForRemove];
-                //
-                // commentForRemove.isInProcessing = true;
-                //
-                // fakeApi.removeComment(commentId, this.currentArticle.id).then( () => {
-                //     this.currentArticle.commentList.splice(indexForRemove, 1);
-                // });
+                const treeNode = commentsFunctions.findCommentInTree(this.currentArticle.commentList, commentId);
+                treeNode.list[ treeNode.index ].isInProcessing = true;
+                fakeApi
+                    .removeComment(this.currentArticle.id, commentId)
+                    .then( () => {
+                        treeNode.list.splice(treeNode.index, 1)
+                    });
             },
 
             removeArticle(articleId) {
                 this.showPageloader();
-                fakeApi.removeArticle(articleId).then(() => {
-                    this.hidePageloader();
-                    this.$router.push({ name: 'Home' });
-                });
+                fakeApi
+                    .removeArticle(articleId)
+                    .then(() => {
+                        this.hidePageloader();
+                        this.$router.push({ name: 'Home' });
+                    });
             }
         },
         
         created() {
-            fakeApi.getArticleById(this.$route.params.id).then((response) => {
-                this.currentArticle = response;
-                this.isDataLoaded = true;
-            });
+            fakeApi
+                .getArticleById(this.$route.params.id)
+                .then((response) => {
+                    this.currentArticle = response;
+                    this.isDataLoaded = true;
+                });
         }
     }
 </script>

@@ -5,13 +5,14 @@
             <div class="comment-item__name">{{ comment.userName }}</div>
             <div class="comment-item__text">{{ comment.text }}</div>
             <div class="button _sm _green" @click="toggleAnswerForm">{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}</div>
-            <div class="button _sm _red" @click="removeComment">Удалить комментарий</div>
+            <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
         </div>
     
         <div class="comment-wrap__answers">
             
             <div class="comment-wrap__answer-form" v-show="isAnswerFormActive">
-                <form-new-comment :parent-comment-id="comment.id" @comment-created="toggleAnswerForm"></form-new-comment>
+                <form-new-comment :parent-comment-id="comment.id"
+                                  @comment-created="toggleAnswerForm"></form-new-comment>
             </div>
     
             <div class="comment-wrap__childs" v-if="comment.childComments">
@@ -34,7 +35,7 @@
         components: {
             FormNewComment
         },
-        inject: ['addComment', 'removeComment' ],
+        inject: ['removeComment'],
         props: ['commentData', 'articleId' ],
         data() {
             return {
@@ -44,10 +45,6 @@
             }
         },
         methods: {
-            onCommentCreated(data) {
-                this.addComment(data);
-                this.toggleAnswerForm();
-            },
             toggleAnswerForm() {
                 this.isAnswerFormActive = !this.isAnswerFormActive;
             }

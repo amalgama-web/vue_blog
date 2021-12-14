@@ -1,9 +1,17 @@
 export const commentsFunctions = {
-    findCommentListInTree(currentList, parentId) {
-        if (parentId === undefined) return currentList;
-        for ( let i = 0; i < currentList.length; i++ ) {
-            if (currentList[i].id === parentId) return currentList[i].childComments;
-            const result = this.findCommentListInTree(currentList[i].childComments, parentId);
+    findCommentListInTree(list, parentId) {
+        if (parentId === undefined) return list;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === parentId) return list[i].childComments;
+            const result = this.findCommentListInTree(list[i].childComments, parentId);
+            if (result) return result;
+        }
+        return false;
+    },
+    findCommentInTree(list, commentId) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === commentId) return { list: list, index: i };
+            const result = this.findCommentInTree(list[i].childComments, commentId);
             if (result) return result;
         }
         return false;

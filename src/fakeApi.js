@@ -112,14 +112,12 @@ export const fakeApi = {
         return createPromise(response);
     },
 
-    removeComment(commentId, articleId) {
+    removeComment(articleId, commentId) {
         const articles = getArticlesFromLS();
-
         const currentArticle = articles.find( item => item.id === articleId);
+        const treeNode = commentsFunctions.findCommentInTree(currentArticle.commentList, commentId);
 
-        const commentIndexForRemove = currentArticle.commentList.findIndex(item => item.id === commentId );
-
-        currentArticle.commentList.splice(commentIndexForRemove, 1);
+        treeNode.list.splice(treeNode.index, 1);
 
         setArticlesToLS(articles);
 
