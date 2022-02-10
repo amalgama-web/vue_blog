@@ -21,7 +21,7 @@
 
 <script>
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import { randomTextService } from '../services/randomTextService';
+    import randomTextService from '../services/randomTextService';
 
     export default {
         components: {

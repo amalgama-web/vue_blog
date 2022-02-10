@@ -1,4 +1,4 @@
-export const commentsService = {
+export default {
     // return current node in comments tree, index of comment with passed id in this node, and child node of this comment
     getNodeData(list, commentId) {
         // if create root comment

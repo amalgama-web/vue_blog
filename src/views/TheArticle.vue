@@ -13,7 +13,7 @@
         <div v-else>
             <article-block :article="currentArticle" @remove-article="removeArticle"></article-block>
     
-            <comments-block :comment-list="currentArticle.commentList"></comments-block>
+            <comment-block :comment-list="currentArticle.commentList"></comment-block>
     
             <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
             <form-new-comment v-show="isCommentFormOpen" @comment-created="toggleCommentForm"></form-new-comment>
@@ -23,19 +23,19 @@
 </template>
 
 <script>
-    import { fakeApiService } from '../services/fakeApiService';
-    import { commentsService } from '../services/commentsService.js';
-    import formNewComment from '../components/form-new-comment';
-    import articleBlock from '../components/article-block';
-    import commentsBlock from '../components/comments-block';
-    import articleNotExist from '../components/article-not-exist';
+    import fakeApiService from '../services/fakeApiService';
+    import commentsService from '../services/commentsService';
+    import FormNewComment from '../components/FormNewComment';
+    import ArticleBlock from '../components/ArticleBlock';
+    import CommentBlock from '../components/CommentBlock';
+    import ArticleNotExist from '../components/ArticleNotExist';
     
     export default {
         components: {
-            articleBlock,
-            articleNotExist,
-            commentsBlock,
-            formNewComment
+            ArticleBlock,
+            ArticleNotExist,
+            CommentBlock,
+            FormNewComment
         },
         
         provide() {

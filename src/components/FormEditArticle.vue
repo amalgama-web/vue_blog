@@ -26,9 +26,9 @@
 </template>
 
 <script>
-    import { fakeApiService } from '../services/fakeApiService'
+    import fakeApiService from '../services/fakeApiService'
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import { randomTextService } from '../services/randomTextService';
+    import randomTextService from '../services/randomTextService';
     
     export default {
         components: {
@@ -56,30 +56,48 @@
                 this.fullText = randomTextService.getRandomSentences(10);
             },
             publishArticle(values, formActions) {
-                this.isFormInProcess = true;
                 
+                this.isFormInProcess = true;
+
                 if (this.preloadArticleId !== undefined) {
+                    
+                    // todo перезаписывать статью в firebase
+                    
                     fakeApiService.updateArticle({
-                        name: this.name,
-                        shortText: this.shortText,
-                        fullText: this.fullText
-                    }, this.preloadArticleId).then( (updatedArticleId) => {
-                        this.isFormInProcess = false;
-                        formActions.resetForm();
-                        this.$emit('article-created', updatedArticleId)
-                    });
+                            name: this.name,
+                            shortText: this.shortText,
+                            fullText: this.fullText
+                        }, this.preloadArticleId)
+                        
+                        .then( updatedArticleId => {
+                            this.isFormInProcess = false;
+                            formActions.resetForm();
+                            this.$emit('article-created', updatedArticleId)
+                        });
                     return;
                 }
 
-                fakeApiService.addArticle({
+                const payload = {
                     name: this.name,
                     shortText: this.shortText,
-                    fullText: this.fullText
-                }).then((newArticleId) => {
+                    fullText: this.fullText,
+                    timeCreated: {
+                        '.sv': 'timestamp'
+                    }
+                };
+                fetch('https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                }).then(response => {
+                    return response.json();
+                }).then(responseData => {
+                    
                     this.isFormInProcess = false;
                     formActions.resetForm();
-                    this.$emit('article-created', newArticleId)
+                    this.$emit('article-created', responseData.name)
+                    
                 });
+                
             },
             isRequired(value) {
                 if (!value.trim()) {

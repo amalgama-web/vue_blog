@@ -16,11 +16,11 @@
             
             <ul class="article-items" v-else-if="articlesList.length">
                 
-                <articles-list-item v-for="article in articlesList"
+                <article-item v-for="article in articlesList"
                                     :article="article"
                                     @open-article="openArticle"
                                     @remove-article="removeArticle"
-                                    :key="article.id"></articles-list-item>
+                                    :key="article.id"></article-item>
                 
                 <li ref="additionalLoadingMarker"></li>
                 <li class="article-additional-preloader" v-show="isAdditionalLoadingActive">
@@ -29,21 +29,22 @@
                 
             </ul>
             
-            <articles-list-empty v-else></articles-list-empty>
+            <article-list-empty v-else></article-list-empty>
             
         </div>
     </section>
 </template>
 
 <script>
-    import { fakeApiService } from '../services/fakeApiService';
-    import articlesListEmpty from '../components/articles-list-empty';
-    import articlesListItem from '../components/articles-list-item';
+    import fakeApiService from '../services/fakeApiService';
+    import articleService from '../services/articleService';
+    import ArticleListEmpty from '../components/ArticleListEmpty';
+    import ArticleItem from '../components/ArticleItem';
 
     export default {
         components: {
-            articlesListEmpty,
-            articlesListItem
+            ArticleListEmpty,
+            ArticleItem
         },
         data() {
             return {
@@ -59,7 +60,7 @@
 
         methods: {
             openArticle(articleId) {
-                this.$router.push({ name: 'Article', params: { id: articleId } });
+                this.$router.push({ name: 'TheArticle', params: { id: articleId } });
             },
 
             removeArticle(articleId) {
@@ -111,17 +112,32 @@
             },
         },
         created() {
-            fakeApiService.getArticlesList(1, 5).then((response) => {
-                this.articlesList = response.articles;
-                this.articlesTotalLength = response.length;
-                this.isInitialDataLoaded = true;
-                
-                if(response.length <= 5) return;
-                
-                this.$nextTick( () => {
-                    this.createLoadingObserver();
+
+            fetch('https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json')
+                .then(response => {
+                    return response.json();
+                })
+                .then(responseData => {
+                    this.articlesList = articleService.prepareArticlesList(responseData);
+                    this.articlesTotalLength = this.articlesList.length;
+                    this.isInitialDataLoaded = true;
+
+                    console.log(responseData);
+                    console.log(this.articlesList);
+                    
                 });
-            });
+            
+            // fakeApiService.getArticlesList(1, 5).then((response) => {
+            //     this.articlesList = response.articles;
+            //     this.articlesTotalLength = response.length;
+            //     this.isInitialDataLoaded = true;
+            //
+            //     if(response.length <= 5) return;
+            //
+            //     this.$nextTick( () => {
+            //         this.createLoadingObserver();
+            //     });
+            // });
         }
     }
 

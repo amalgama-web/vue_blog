@@ -29,11 +29,11 @@
 </template>
 
 <script>
-    import formNewComment from '../components/form-new-comment';
+    import FormNewComment from '../components/FormNewComment';
 
     export default {
         components: {
-            formNewComment
+            FormNewComment
         },
         inject: ['removeComment'],
         props: ['commentData', 'articleId' ],

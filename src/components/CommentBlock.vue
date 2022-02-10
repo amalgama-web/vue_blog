@@ -17,12 +17,12 @@
 
 
 <script>
-    import commentItem from '../components/comment-item';
-    import { commentsService } from "../services/commentsService";
+    import CommentItem from '../components/CommentItem';
+    import commentsService from "../services/commentsService";
     
     export default {
         components: {
-            commentItem,
+            CommentItem,
         },
         props: ['commentList'],
         computed: {

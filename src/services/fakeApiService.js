@@ -1,4 +1,4 @@
-import { commentsService } from './commentsService';
+import commentsService from './commentsService';
 
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -25,7 +25,7 @@ function createPromise(response) {
     });
 }
 
-export const fakeApiService = {
+export default {
     getArticlesList(start, end) {
         const articles = getArticlesFromLS();
         let outputArticles = [];

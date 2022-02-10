@@ -8,7 +8,7 @@
         <div class="article-success" v-if="isArticleUpdated">
             <div class="article-success__head">Ваша статья отредактирована</div>
             <div class="article-success__buttons">
-                <router-link class="button" :to="{ name: 'Article', params: { id: editedArticleId } }">
+                <router-link class="button" :to="{ name: 'TheArticle', params: { id: editedArticleId } }">
                     Просмотреть статью
                 </router-link>
             </div>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import FormEditArticle from '../components/form-edit-article'
+    import FormEditArticle from '../components/FormEditArticle'
 
     export default {
         components: {

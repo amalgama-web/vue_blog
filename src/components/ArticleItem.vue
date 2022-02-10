@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import { commentsService } from "../services/commentsService";
+    import commentsService from "../services/commentsService";
     
     export default {
         props: ['article'],

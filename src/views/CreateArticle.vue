@@ -8,7 +8,7 @@
         <div class="article-success" v-if="isArticleCreated">
             <div class="article-success__head">Ваша статья опубликована</div>
             <div class="article-success__buttons">
-                <router-link class="button" :to="{ name: 'Article', params: { id: newArticleId } }">
+                <router-link class="button" :to="{ name: 'TheArticle', params: { id: newArticleId } }">
                     Просмотреть статью
                 </router-link>
                 <div class="button" @click="createAnother">Создать еще одну статью</div>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import FormEditArticle from '../components/form-edit-article'
+    import FormEditArticle from '../components/FormEditArticle'
 
     export default {
         components: {
@@ -43,7 +43,7 @@
             },
             createAnother() {
                 this.isArticleCreated = false;
-            }
+            },
         }
     }
 </script>

@@ -9,7 +9,7 @@ function randInt(min, max) {
     return Math.floor(rand);
 }
 
-export const randomTextService = {
+export default {
 
     getRandomSingleSentence() {
         return `${part1[randInt(0, 9)]} ${part2[randInt(0, 9)]} ${part3[randInt(0, 9)]} ${part4[randInt(0, 9)]}`;
