@@ -8,6 +8,11 @@ export default {
                 ...articlesObject[id]
             });
         }
-        return articlesList;
+        return articlesList.reverse();
+    },
+    prepareArticle(articleObj, articleId) {
+        articleObj.id = articleId;
+        articleObj.commentList = [];
+        return articleObj;
     }
 };

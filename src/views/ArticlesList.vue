@@ -23,7 +23,8 @@
                                     :key="article.id"></article-item>
                 
                 <li ref="additionalLoadingMarker"></li>
-                <li class="article-additional-preloader" v-show="isAdditionalLoadingActive">
+                <li class="article-items__info" v-if="isAllArticlesLoaded">Все статьи загружены</li>
+                <li class="article-items__preloader" v-show="isAdditionalLoadingActive">
                     <div class="preloader"></div>
                 </li>
                 
@@ -50,11 +51,14 @@
             return {
                 isInitialDataLoaded: false,
                 isAdditionalLoadingActive: false,
+                isAllArticlesLoaded: false,
                 articlesList: [],
 
-                lastLoadedArticleIndex: 5,
-                articlesTotalLength: null,
-                observer: null
+                // todo обсервер вынести за реактивность
+                observer: null,
+                loadingArticlesAmount: 5,
+                
+                lastArticleCreatedTime: null
             }
         },
 
@@ -73,7 +77,6 @@
                     .removeArticle(articleId)
                     .then(() => {
                         this.articlesList.splice(indexForRemove, 1);
-                        this.lastLoadedArticleIndex -= 1;
                     });
             },
             
@@ -97,47 +100,45 @@
             },
             
             additionalLoading() {
-                if (this.lastLoadedArticleIndex >= this.articlesTotalLength) {
-                    this.destroyLoadingObserver();
-                    return;
-                }
-                
                 this.isAdditionalLoadingActive = true;
-                fakeApiService.getArticlesList(this.lastLoadedArticleIndex + 1, this.lastLoadedArticleIndex + 5).then((response) => {
-                    this.articlesList.push(...response.articles);
-                    this.articlesTotalLength = response.length;
-                    this.isAdditionalLoadingActive = false;
-                    this.lastLoadedArticleIndex += 5;
-                });
+
+                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?orderBy="timeCreated"&endAt=${this.lastArticleCreatedTime - 1}&limitToLast=${this.loadingArticlesAmount}`)
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        if (responseData === null) {
+                            this.destroyLoadingObserver();
+                            this.isAllArticlesLoaded = true;
+                            return;
+                        }
+                        this.articlesList.push( ...articleService.prepareArticlesList(responseData) );
+                        this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
+                    })
+                    .finally(() => {
+                        this.isAdditionalLoadingActive = false;
+                    });
             },
         },
         created() {
 
-            fetch('https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json')
+            fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?orderBy="timeCreated"&limitToLast=${this.loadingArticlesAmount}`)
                 .then(response => {
                     return response.json();
                 })
                 .then(responseData => {
+                    if (responseData === null) return;
+                    
                     this.articlesList = articleService.prepareArticlesList(responseData);
-                    this.articlesTotalLength = this.articlesList.length;
+                    this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
                     this.isInitialDataLoaded = true;
 
-                    console.log(responseData);
-                    console.log(this.articlesList);
-                    
+                    this.$nextTick( () => {
+                        this.createLoadingObserver();
+                    });
+                })
+                .finally(() => {
                 });
-            
-            // fakeApiService.getArticlesList(1, 5).then((response) => {
-            //     this.articlesList = response.articles;
-            //     this.articlesTotalLength = response.length;
-            //     this.isInitialDataLoaded = true;
-            //
-            //     if(response.length <= 5) return;
-            //
-            //     this.$nextTick( () => {
-            //         this.createLoadingObserver();
-            //     });
-            // });
         }
     }
 
@@ -151,10 +152,19 @@
         }
     }
     
-    .article-additional-preloader {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 50px;
+    .article-items {
+        &__info {
+            margin: 20px auto;
+            text-align: center;
+            color: #aaa;
+            font-size: 16px;
+            font-style: italic;
+        }
+        &__preloader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+        }
     }
 </style>

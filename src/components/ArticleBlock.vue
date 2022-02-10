@@ -1,5 +1,8 @@
 <template>
     <div class="article-view" >
+        <div class="article-view__dates">
+            {{ timeCreated }}
+        </div>
         <div class="article-view__head">
             {{ article.name }}
         </div>
@@ -22,12 +25,30 @@
 <script>
     export default {
         props: ['article'],
+        computed: {
+            timeCreated() {
+                return new Date(this.article.timeCreated).toLocaleString("ru",{
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
+            }
+        },
     }
 </script>
 
 <style lang="less">
     .article-view {
         padding: 40px 0;
+        &__dates {
+            font-size: 16px;
+            color: #aaa;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
         &__head {
             font-size: 30px;
             margin-bottom: 20px;

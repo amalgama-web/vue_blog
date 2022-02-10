@@ -6,8 +6,15 @@
         <div class="article-item__name">{{article.name}}</div>
         <div class="article-item__text">{{article.shortText}}</div>
         
-        <div class="article-item__buttons">
-            <div class="article-item__comment-count">Комментариев: {{ commentsCount }}</div>
+        <div class="article-item__info">
+            <div>
+                Создано: <strong>{{ timeCreated }}</strong>
+            </div>
+            <div>
+                Комментариев: <strong>{{ commentsCount }}</strong>
+            </div>
+        </div>
+        <div class="article-item__info">
             <router-link class="button _green _sm" :to="{ name: 'EditArticle', params: { id: article.id } }" @click.stop>
                 Редактировать
             </router-link>
@@ -24,6 +31,16 @@
         computed: {
             commentsCount() {
                 return commentsService.countComments( this.article.commentList, 0 );
+            },
+            timeCreated() {
+                return new Date(this.article.timeCreated).toLocaleString("ru",{
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
             }
         }
     }
@@ -70,12 +87,18 @@
             max-height: 3 * 20px;
         }
         
-        &__buttons {
+        &__info {
             display: flex;
             align-items: center;
-            
+            margin-bottom: 20px;
+            &:last-child {
+                margin-bottom: 0;
+            }
             & > * {
                 margin-right: 20px;
+            }
+            strong {
+                font-weight: 700;
             }
         }
         
