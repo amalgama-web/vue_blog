@@ -58,6 +58,7 @@
                 
                 this.isFormInProcess = true;
 
+                // if we edit existing article
                 if (this.preloadArticleId !== undefined) {
                     
                     const payload = {
@@ -72,17 +73,23 @@
                             method: 'PATCH',
                             body: JSON.stringify(payload)
                         }).then(response => {
+                            
                             return response.json();
+                            
                         }).then(responseData => {
     
                             this.isFormInProcess = false;
+                            
                             formActions.resetForm();
+                            
                             this.$emit('article-created', responseData.name)
     
                         });
+                    
                     return;
                 }
 
+                // create new article
                 const payload = {
                     name: this.name,
                     shortText: this.shortText,
@@ -95,13 +102,16 @@
                     method: 'POST',
                     body: JSON.stringify(payload)
                 }).then(response => {
+                   
                     return response.json();
+                
                 }).then(responseData => {
-                    
+                
                     this.isFormInProcess = false;
+                   
                     formActions.resetForm();
+                   
                     this.$emit('article-created', responseData.name)
-                    
                 });
                 
             },

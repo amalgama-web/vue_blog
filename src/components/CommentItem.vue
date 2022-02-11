@@ -2,8 +2,11 @@
     <div class="comment-wrap" :class="{'_element-processing': isInProcessing}">
         
         <div class="comment-item">
-            <div class="comment-item__name">{{ comment.userName }}</div>
-            <div class="comment-item__text">{{ comment.text }}</div>
+            <div class="comment-item__head">
+                <span class="comment-item__name">{{ commentData.userName }}</span>&nbsp;
+                <span class="comment-item__time">{{ commentCreatedTime }}</span>
+            </div>
+            <div class="comment-item__text">{{ commentData.text }}</div>
             <div class="button _sm _green" @click="toggleAnswerForm">{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}</div>
             <div class="button _sm _red" @click="remove(commentBranch)">Удалить комментарий</div>
         </div>
@@ -15,8 +18,8 @@
                                   @comment-created="toggleAnswerForm"></form-new-comment>
             </div>
     
-            <div class="comment-wrap__childs" v-if="comment.commentList">
-                <comment-item v-for="childComment in comment.commentList"
+            <div class="comment-wrap__childs" v-if="commentData.commentList">
+                <comment-item v-for="childComment in commentData.commentList"
                               :key="childComment.id"
                               :comment-data="childComment"
                               :comment-branch="commentBranch + '/' + childComment.id">
@@ -39,9 +42,20 @@
         props: ['commentData', 'articleId', 'commentBranch'],
         data() {
             return {
-                comment: this.commentData,
                 isInProcessing: false,
                 isAnswerFormActive: false
+            }
+        },
+        computed: {
+            commentCreatedTime() {
+                return new Date(this.commentData.timeCreated).toLocaleString("ru",{
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
             }
         },
         methods: {
@@ -130,9 +144,16 @@
         font-size: 13px;
         line-height: 20px;
         
+        &__head {
+            margin-bottom: 10px;
+        }
+        
         &__name {
             font-weight: bold;
-            margin-bottom: 10px;
+        }
+    
+        &__time {
+            color: #555;
         }
         
         &__text {

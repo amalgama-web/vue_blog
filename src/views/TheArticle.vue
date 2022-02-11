@@ -62,8 +62,6 @@
             }
         },
         
-        
-
         methods: {
             toggleCommentForm() {
                 this.isCommentFormOpen = !this.isCommentFormOpen;
@@ -71,14 +69,18 @@
             
             addComment(commentData, commentBranch) {
                 
-                const commentBranchNodesIds = commentBranch.split('/');
-                commentBranchNodesIds.shift();
+                const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
                 const commentBranchPath = commentBranchNodesIds.map(nodeId => `/${nodeId}/commentList`).join('');
                 const targetCommentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
 
                 return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}/commentList${commentBranchPath}.json`, {
                         method: 'POST',
-                        body: JSON.stringify(commentData)
+                        body: JSON.stringify({
+                            timeCreated: {
+                                '.sv': 'timestamp'
+                            },
+                            ...commentData
+                        })
                     })
                     .then(response => {
                         return response.json();
@@ -87,6 +89,7 @@
                         targetCommentList.push({
                             id: responseData.name,
                             commentList: [],
+                            timeCreated: new Date().getTime(),
                             ...commentData
                         });
                     })
@@ -95,13 +98,12 @@
             },
             
             removeComment(commentBranch) {
-                const commentBranchNodesIds = commentBranch.split('/');
-                commentBranchNodesIds.shift();
+                const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
                 const commentBranchPath = commentBranchNodesIds.map(nodeId => `/commentList/${nodeId}`).join('');
                 const targetCommentId = commentBranchNodesIds.pop();
                 const parentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
                 const targetIndex = parentList.findIndex(commentItem => commentItem.id === targetCommentId);
-
+                
                 return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}${commentBranchPath}.json`, {
                         method: 'DELETE'
                     })
