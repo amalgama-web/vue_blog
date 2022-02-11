@@ -21,9 +21,9 @@ export default {
         let articlesList = [];
 
         for(let id in articlesObject) {
+            articlesObject[id].commentList = prepareComments(articlesObject[id].commentList);
             articlesList.push({
                 id: id,
-                commentList: [],
                 ...articlesObject[id]
             });
         }
