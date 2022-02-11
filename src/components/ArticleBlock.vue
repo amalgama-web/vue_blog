@@ -1,7 +1,10 @@
 <template>
     <div class="article-view" >
         <div class="article-view__dates">
-            {{ timeCreated }}
+            Создано: {{ timeCreated }}
+        </div>
+        <div class="article-view__dates" v-if="article.timeEdited">
+            Отредактировано: {{ timeEdited }}
         </div>
         <div class="article-view__head">
             {{ article.name }}
@@ -35,6 +38,17 @@
                     minute: 'numeric',
                     second: 'numeric'
                 });
+            },
+            timeEdited() {
+                return !this.article.timeEdited ? null : new Date().toLocaleString("ru",{
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
+                
             }
         },
     }
@@ -44,10 +58,12 @@
     .article-view {
         padding: 40px 0;
         &__dates {
-            font-size: 16px;
+            font-size: 14px;
+            line-height: 1;
             color: #aaa;
             font-style: italic;
             margin-bottom: 20px;
+            
         }
         &__head {
             font-size: 30px;

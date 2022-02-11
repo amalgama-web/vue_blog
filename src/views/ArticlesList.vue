@@ -37,7 +37,6 @@
 </template>
 
 <script>
-    import fakeApiService from '../services/fakeApiService';
     import articleService from '../services/articleService';
     import ArticleListEmpty from '../components/ArticleListEmpty';
     import ArticleItem from '../components/ArticleItem';
@@ -73,9 +72,16 @@
                 
                 articleForRemove.isInProcessing = true;
 
-                fakeApiService
-                    .removeArticle(articleId)
-                    .then(() => {
+                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${articleId}.json`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        console.log(responseData);
+                    })
+                    .finally(() => {
                         this.articlesList.splice(indexForRemove, 1);
                     });
             },
@@ -138,6 +144,7 @@
                     });
                 })
                 .finally(() => {
+                    this.isInitialDataLoaded = true;
                 });
         }
     }

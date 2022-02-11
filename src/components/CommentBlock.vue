@@ -8,7 +8,7 @@
             <comment-item v-for="comment in commentList"
                           :key="comment.id"
                           :comment-data="comment"
-                          :class="{'_element-processing': comment.isInProcessing}">
+                          :comment-branch="'/' + comment.id">
             </comment-item>
         
         </div>

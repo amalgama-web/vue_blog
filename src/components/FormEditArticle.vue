@@ -26,7 +26,6 @@
 </template>
 
 <script>
-    import fakeApiService from '../services/fakeApiService'
     import { Form, Field, ErrorMessage } from 'vee-validate';
     import randomTextService from '../services/randomTextService';
     
@@ -61,18 +60,25 @@
 
                 if (this.preloadArticleId !== undefined) {
                     
-                    // todo перезаписывать статью в firebase
-                    
-                    fakeApiService.updateArticle({
-                            name: this.name,
-                            shortText: this.shortText,
-                            fullText: this.fullText
-                        }, this.preloadArticleId)
-                        
-                        .then( updatedArticleId => {
+                    const payload = {
+                        name: this.name,
+                        shortText: this.shortText,
+                        fullText: this.fullText,
+                        timeEdited: {
+                            '.sv': 'timestamp'
+                        }
+                    };
+                    fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.preloadArticleId}.json`, {
+                            method: 'PATCH',
+                            body: JSON.stringify(payload)
+                        }).then(response => {
+                            return response.json();
+                        }).then(responseData => {
+    
                             this.isFormInProcess = false;
                             formActions.resetForm();
-                            this.$emit('article-created', updatedArticleId)
+                            this.$emit('article-created', responseData.name)
+    
                         });
                     return;
                 }
@@ -110,13 +116,19 @@
             if (this.preloadArticleId === undefined) return;
             
             this.isFormInProcess = true;
-            
-            fakeApiService.getArticleById(this.preloadArticleId).then((response) => {
-                this.isFormInProcess = false;
-                this.name = response.name;
-                this.shortText = response.shortText;
-                this.fullText = response.fullText;
-            });
+
+            fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.preloadArticleId}.json`)
+                .then(response => {
+                    return response.json();
+                })
+                .then(responseData => {
+                    this.name = responseData.name;
+                    this.shortText = responseData.shortText;
+                    this.fullText = responseData.fullText;
+                })
+                .finally(() => {
+                    this.isFormInProcess = false;
+                });
         }
     }
 </script>

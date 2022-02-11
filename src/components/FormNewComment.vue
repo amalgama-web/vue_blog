@@ -31,7 +31,7 @@
         },
         inject: ['addComment'],
 
-        props: ['articleId', 'parentCommentId'],
+        props: ['articleId', 'commentBranch'],
         
         data() {
             return {
@@ -48,7 +48,7 @@
                 this.addComment({
                         userName: this.userName,
                         text: this.text
-                    }, this.parentCommentId)
+                    }, this.commentBranch)
                     .then(() => {
                         formActions.resetForm();
                         this.isFormInProcess = false;

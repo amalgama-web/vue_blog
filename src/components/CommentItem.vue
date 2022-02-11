@@ -1,25 +1,25 @@
 <template>
-    <div class="comment-wrap">
+    <div class="comment-wrap" :class="{'_element-processing': isInProcessing}">
         
         <div class="comment-item">
             <div class="comment-item__name">{{ comment.userName }}</div>
             <div class="comment-item__text">{{ comment.text }}</div>
             <div class="button _sm _green" @click="toggleAnswerForm">{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}</div>
-            <div class="button _sm _red" @click="removeComment(comment.id)">Удалить комментарий</div>
+            <div class="button _sm _red" @click="remove(commentBranch)">Удалить комментарий</div>
         </div>
     
         <div class="comment-wrap__answers">
             
             <div class="comment-wrap__answer-form" v-show="isAnswerFormActive">
-                <form-new-comment :parent-comment-id="comment.id"
+                <form-new-comment :comment-branch="commentBranch"
                                   @comment-created="toggleAnswerForm"></form-new-comment>
             </div>
     
-            <div class="comment-wrap__childs" v-if="comment.childComments">
-                <comment-item v-for="childComment in comment.childComments"
+            <div class="comment-wrap__childs" v-if="comment.commentList">
+                <comment-item v-for="childComment in comment.commentList"
                               :key="childComment.id"
                               :comment-data="childComment"
-                              :class="{'_element-processing': childComment.isInProcessing}">
+                              :comment-branch="commentBranch + '/' + childComment.id">
                 </comment-item>
             </div>
             
@@ -36,7 +36,7 @@
             FormNewComment
         },
         inject: ['removeComment'],
-        props: ['commentData', 'articleId' ],
+        props: ['commentData', 'articleId', 'commentBranch'],
         data() {
             return {
                 comment: this.commentData,
@@ -47,6 +47,10 @@
         methods: {
             toggleAnswerForm() {
                 this.isAnswerFormActive = !this.isAnswerFormActive;
+            },
+            remove(commentBranch) {
+                this.isInProcessing = true;
+                this.removeComment(commentBranch);
             }
         },
     }

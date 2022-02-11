@@ -8,24 +8,26 @@
             <div class="preloader"></div>
         </div>
     
-        <div v-else-if="isArticlesExist">
+        <div v-else-if="isArticleExist">
             <article-block :article="currentArticle" @remove-article="removeArticle"></article-block>
         
             <comment-block :comment-list="currentArticle.commentList"></comment-block>
         
             <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
-            <form-new-comment v-show="isCommentFormOpen" @comment-created="toggleCommentForm"></form-new-comment>
+            <form-new-comment
+                    v-show="isCommentFormOpen"
+                    @comment-created="toggleCommentForm"
+                    comment-branch=""
+            ></form-new-comment>
         </div>
         
         <article-not-exist v-else></article-not-exist>
-        
         
         
     </div>
 </template>
 
 <script>
-    import fakeApiService from '../services/fakeApiService';
     import commentsService from '../services/commentsService';
     import articleService from '../services/articleService';
     import FormNewComment from '../components/FormNewComment';
@@ -53,9 +55,10 @@
         data() {
             return {
                 currentArticle: null,
+                
                 isDataLoaded: false,
                 isCommentFormOpen: false,
-                isArticlesExist: true
+                isArticleExist: true
             }
         },
         
@@ -66,33 +69,68 @@
                 this.isCommentFormOpen = !this.isCommentFormOpen;
             },
             
-            addComment(data, parentCommentId) {
-                return new Promise( (resolve) => {
-                    fakeApiService
-                        .addComment(data, this.currentArticle.id, parentCommentId)
-                        .then( (newComment) => {
-                            resolve();
-                            const commentList = commentsService.getNodeData(this.currentArticle.commentList, parentCommentId).childList;
-                            commentList.push(newComment);
+            addComment(commentData, commentBranch) {
+                
+                const commentBranchNodesIds = commentBranch.split('/');
+                commentBranchNodesIds.shift();
+                const commentBranchPath = commentBranchNodesIds.map(nodeId => `/${nodeId}/commentList`).join('');
+                const targetCommentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
+
+                return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}/commentList${commentBranchPath}.json`, {
+                        method: 'POST',
+                        body: JSON.stringify(commentData)
+                    })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        targetCommentList.push({
+                            id: responseData.name,
+                            commentList: [],
+                            ...commentData
                         });
-                });
+                    })
+                    .finally(() => {
+                    });
             },
             
-            removeComment(commentId) {
-                const commentsTreeNode = commentsService.getNodeData(this.currentArticle.commentList, commentId);
-                commentsTreeNode.currentNodeList[ commentsTreeNode.indexInCurrentNode ].isInProcessing = true;
-                fakeApiService
-                    .removeComment(this.currentArticle.id, commentId)
-                    .then( () => {
-                        commentsTreeNode.currentNodeList.splice(commentsTreeNode.indexInCurrentNode, 1)
+            removeComment(commentBranch) {
+                const commentBranchNodesIds = commentBranch.split('/');
+                commentBranchNodesIds.shift();
+                const commentBranchPath = commentBranchNodesIds.map(nodeId => `/commentList/${nodeId}`).join('');
+                const targetCommentId = commentBranchNodesIds.pop();
+                const parentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
+                const targetIndex = parentList.findIndex(commentItem => commentItem.id === targetCommentId);
+
+                return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}${commentBranchPath}.json`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        console.log(responseData);
+                        parentList.splice(targetIndex, 1);
+                    })
+                    .finally(() => {
                     });
+                
             },
 
             removeArticle(articleId) {
+                
                 this.showPageloader();
-                fakeApiService
-                    .removeArticle(articleId)
-                    .then(() => {
+                
+                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${articleId}.json`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        console.log(responseData);
+                    })
+                    .finally(() => {
                         this.hidePageloader();
                         this.$router.push({ name: 'Home' });
                     });
@@ -105,6 +143,10 @@
                     return response.json();
                 })
                 .then(responseData => {
+                    if (responseData === null) {
+                        this.isArticleExist = false;
+                        return;
+                    }
                     this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
                 })
                 .finally(() => {
