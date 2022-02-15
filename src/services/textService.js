@@ -9,6 +9,11 @@ function randInt(min, max) {
     return Math.floor(rand);
 }
 
+function normalizeName(str) {
+    str = str.toLowerCase();
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default {
 
     getRandomSingleSentence() {
@@ -25,6 +30,13 @@ export default {
 
     getRandomName() {
         return names[randInt(0, 29)];
+    },
+
+    prepareFullName(name, secondName) {
+        return `${normalizeName(name)} ${normalizeName(secondName)}`
+    },
+    getInitialsFromFullName(fullName) {
+        return fullName.split(' ').map(item => item[0]).join('');
     }
 };
 

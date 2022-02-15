@@ -110,8 +110,7 @@
                     .then(response => {
                         return response.json();
                     })
-                    .then(responseData => {
-                        console.log(responseData);
+                    .then(() => {
                         parentList.splice(targetIndex, 1);
                     })
                     .finally(() => {
@@ -129,8 +128,7 @@
                     .then(response => {
                         return response.json();
                     })
-                    .then(responseData => {
-                        console.log(responseData);
+                    .then(() => {
                     })
                     .finally(() => {
                         this.hidePageloader();

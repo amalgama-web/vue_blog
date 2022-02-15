@@ -15,9 +15,26 @@
             </div>
         </div>
         <div class="article-item__info">
-            <router-link class="button _green _sm" :to="{ name: 'EditArticle', params: { id: article.id } }" @click.stop>
+            
+            <div class="button _orange _sm"
+                 @click.stop="toggleFavorite(article.id)">
+                
+                <span v-if="isInFavorites(article.id)">
+                    <span class="button__icon _active">❤</span>&nbsp;В избранном
+                </span>
+                
+                <span v-else>
+                    <span class="button__icon">❤</span>&nbsp;В избранное
+                </span>
+                
+            </div>
+            
+            <router-link class="button _green _sm"
+                         :to="{ name: 'EditArticle', params: { id: article.id } }"
+                         @click.stop>
                 Редактировать
             </router-link>
+            
             <div class="button _red _sm" @click.stop="$emit('remove-article', article.id)">Удалить запись</div>
         </div>
     </li>
@@ -33,14 +50,23 @@
                 return commentsService.countComments( this.article.commentList, 0 );
             },
             timeCreated() {
-                return new Date(this.article.timeCreated).toLocaleString("ru",{
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
+                return new Date(this.article.timeCreated).toLocaleString("ru", {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
                     minute: 'numeric',
                     second: 'numeric'
                 });
+            }
+        },
+        methods: {
+            toggleFavorite(articleId) {
+                this.$store.dispatch('toggleArticleInFavorites', articleId);
+            },
+            
+            isInFavorites(articleId) {
+                return this.$store.state.favorites.some(favoriteId => favoriteId === articleId);
             }
         }
     }

@@ -27,7 +27,7 @@
 
 <script>
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import randomTextService from '../services/randomTextService';
+    import textService from '../services/textService';
     
     export default {
         components: {
@@ -50,11 +50,13 @@
 
         methods: {
             autofill() {
-                this.name = randomTextService.getRandomSingleSentence();
-                this.shortText = randomTextService.getRandomSentences(5);
-                this.fullText = randomTextService.getRandomSentences(10);
+                this.name = textService.getRandomSingleSentence();
+                this.shortText = textService.getRandomSentences(5);
+                this.fullText = textService.getRandomSentences(10);
             },
             publishArticle(values, formActions) {
+                
+                if (!this.$store.getters.isAuthenticated) return;
                 
                 this.isFormInProcess = true;
 
@@ -94,11 +96,14 @@
                     name: this.name,
                     shortText: this.shortText,
                     fullText: this.fullText,
+                    creatorId: this.$store.getters.userId,
+                    creatorFullname: this.$store.getters.userFullname,
                     timeCreated: {
                         '.sv': 'timestamp'
                     }
                 };
-                fetch('https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json', {
+                const url = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?auth=${this.$store.getters.token}`;
+                fetch(url, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 }).then(response => {

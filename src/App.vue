@@ -4,8 +4,18 @@
     </div>
     
     <header class="header">
-        <div class="l-section">
-            <div class="header__title">Тестовое задание блог</div>
+        <button class="button" @click="getUserInfo()">Click</button>
+        <div class="header__inner">
+            Избранное {{ favoritesCount }}
+        </div>
+        <div class="header__inner">
+            <div v-if="$store.getters.isAuthenticated" class="user-plate">
+                <span class="user-plate__icon">{{ $store.getters.userInitials }}</span>
+                <span class="user-plate__name">{{ $store.getters.userFullname }} (<a href="#" @click.prevent="logout()">выйти</a>)</span>
+            </div>
+            <router-link v-else to="/auth" class="button">
+                Вход / Регистрация
+            </router-link>
         </div>
     </header>
     
@@ -29,13 +39,53 @@
                 isPageloaderVisible: false
             }
         },
+        computed: {
+            favoritesCount() {
+                return this.$store.getters.favoritesCount;
+            }
+        },
         methods: {
             showPageloader() {
                 this.isPageloaderVisible = true;
             },
             hidePageloader() {
                 this.isPageloaderVisible = false;
-            }
+            },
+            logout() {
+                this.$store.dispatch('logout');
+            },
+            testButton() {
+                const url = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${this.$store.getters.token}`;
+                fetch(url)
+                    .then(response => {
+
+                        return response.json();
+    
+                    }).then(responseData => {
+                        console.log(responseData);
+                    });
+            },
+            getUserInfo() {
+                
+                const url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyCkynVLaz8d5mCQCSdJHG_QBNmq6JpVR-4`;
+                fetch(url,{
+                    method: 'POST',
+                    body: JSON.stringify({
+                        idToken: this.$store.getters.token
+                    })
+                })
+                    .then(response => {
+
+                        return response.json();
+
+                    }).then(responseData => {
+                        console.log(responseData);
+                    });
+            },
+        },
+        
+        created() {
+            this.$store.dispatch('setUserFromStorage');
         }
     }
 </script>
@@ -111,23 +161,56 @@
     
     a {
         text-decoration: none;
+        &:link {color: cornflowerblue;}
+        &:visited {color: cornflowerblue;}
+        &:hover {color: darken(cornflowerblue, 10%);}
+        &:active {color: cornflowerblue;}
     }
     
     .l-container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 40px 20px;
-        
     }
     
     .header {
+        position: sticky;
+        z-index: 10;
+        top: 0;
         background-color: #eee;
-        padding-top: 15px;
-        padding-bottom: 15px;
-        
+        box-shadow: 0 0 20px 0 rgba(0,0,0,.3);
+        &__inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
         &__title {
             text-align: center;
             font-size: 25px;
+        }
+        &__user-info {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+    }
+    .user-plate {
+        &__icon {
+            display: inline-block;
+            @square: 40px;
+            height: @square;
+            width: @square;
+            line-height: @square;
+            text-align: center;
+            background-color: #2d2d2d;
+            color: #cccccc;
+            font-size: 20px;
+            text-transform: uppercase;
+        
+            border-radius: 50%;
+        }
+        &__name {
+        
         }
     }
     
@@ -153,6 +236,10 @@
         font-weight: 400;
         font-style: normal;
         color: #fff;
+        &:link {color: #fff;}
+        &:visited {color: #fff;}
+        &:hover {color: #fff;}
+        &:active {color: #fff;}
         
         transition: all linear 150ms;
     
@@ -173,11 +260,23 @@
             &:hover { background-color: lighten(mediumseagreen, 5%); }
             &:active { background-color: mediumseagreen; }
         }
+    
+        &._orange {
+            background-color: orange;
+            &:hover { background-color: lighten(orange, 5%); }
+            &:active { background-color: orange; }
+        }
         
         &._sm {
             height: 30px;
             padding: 5px 13px;
             font-size: 12px;
+        }
+        
+        &__icon {
+            &._active {
+                color: orangered;
+            }
         }
     }
     

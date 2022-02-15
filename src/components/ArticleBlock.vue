@@ -31,20 +31,20 @@
         computed: {
             timeCreated() {
                 return new Date(this.article.timeCreated).toLocaleString("ru",{
-                    year: 'numeric',
+                    year: '2-digit',
                     month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
+                    day: '2-digit',
+                    hour: '2-digit',
                     minute: 'numeric',
                     second: 'numeric'
                 });
             },
             timeEdited() {
-                return !this.article.timeEdited ? null : new Date().toLocaleString("ru",{
-                    year: 'numeric',
+                return !this.article.timeEdited ? null : new Date().toLocaleString("ru", {
+                    year: '2-digit',
                     month: 'long',
-                    day: 'numeric',
-                    hour: 'numeric',
+                    day: '2-digit',
+                    hour: '2-digit',
                     minute: 'numeric',
                     second: 'numeric'
                 });
