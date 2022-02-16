@@ -30,6 +30,7 @@
 <script>
     import commentsService from '../services/commentsService';
     import articleService from '../services/articleService';
+    import createUrlService from '../services/createUrlService';
     import FormNewComment from '../components/FormNewComment';
     import ArticleBlock from '../components/ArticleBlock';
     import CommentBlock from '../components/CommentBlock';
@@ -70,9 +71,11 @@
             addComment(commentData, commentBranch) {
                 
                 const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
+                
                 const commentBranchPath = commentBranchNodesIds.map(nodeId => `/${nodeId}/commentList`).join('');
+                
                 const targetCommentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
-
+                
                 return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}/commentList${commentBranchPath}.json`, {
                         method: 'POST',
                         body: JSON.stringify({
@@ -98,10 +101,15 @@
             },
             
             removeComment(commentBranch) {
+                
                 const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
+                
                 const commentBranchPath = commentBranchNodesIds.map(nodeId => `/commentList/${nodeId}`).join('');
+                
                 const targetCommentId = commentBranchNodesIds.pop();
+                
                 const parentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
+                
                 const targetIndex = parentList.findIndex(commentItem => commentItem.id === targetCommentId);
                 
                 return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}${commentBranchPath}.json`, {
@@ -121,8 +129,10 @@
             removeArticle(articleId) {
                 
                 this.showPageloader();
-                
-                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${articleId}.json`, {
+
+                const url = createUrlService.article(articleId, this.$store.getters.token);
+
+                fetch(url, {
                         method: 'DELETE'
                     })
                     .then(response => {
@@ -138,7 +148,8 @@
         },
         
         created() {
-            fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.$route.params.id}.json`)
+            const url = createUrlService.article(this.$route.params.id);
+            fetch(url)
                 .then(response => {
                     return response.json();
                 })

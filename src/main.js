@@ -3,6 +3,7 @@ import { createStore } from 'vuex';
 import App from './App.vue';
 import router from './router';
 import textService from './services/textService';
+import createUrlService from './services/createUrlService';
 
 const app = createApp(App);
 
@@ -26,7 +27,7 @@ const store = createStore({
             return state.favorites.length;
         },
 
-        isAuthenticated(state) {
+        isAuth(state) {
             return !!state.user.token;
         },
 
@@ -42,7 +43,7 @@ const store = createStore({
             return state.user.token ? textService.getInitialsFromFullName(state.user.fullName) : '';
         },
 
-        userFullname(state) {
+        userFullName(state) {
             return state.user.token ? state.user.fullName : '';
         }
     },
@@ -137,8 +138,9 @@ const store = createStore({
         signUp(context, payload) {
 
             const preparedFullName = textService.prepareFullName(payload.name, payload.secondName);
+            const url = createUrlService.signUp;
 
-            fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCkynVLaz8d5mCQCSdJHG_QBNmq6JpVR-4`, {
+            fetch(url, {
                 method: 'POST',
                 body: JSON.stringify({
                     email: payload.email,
@@ -158,6 +160,33 @@ const store = createStore({
                         token: responseData.idToken,
                         expire: responseData.expiresIn,
                         fullName: preparedFullName
+                    });
+                });
+        },
+
+        signIn(context, payload) {
+
+            const url = createUrlService.signIn;
+
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: payload.email,
+                    password: payload.password,
+                    returnSecureToken: true
+                })
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(responseData => {
+                    console.log(responseData);
+                    context.dispatch('setUser', {
+                        id: responseData.localId,
+                        email: responseData.email,
+                        token: responseData.idToken,
+                        expire: responseData.expiresIn,
+                        fullName: responseData.displayName
                     });
                 });
         },

@@ -6,7 +6,10 @@
         <div class="article-item__name">{{article.name}}</div>
         <div class="article-item__text">{{article.shortText}}</div>
         
-        <div class="article-item__info">
+        <div class="article-item__row">
+            <div>
+                Автор: <strong>{{ article.creatorFullName }}</strong>
+            </div>
             <div>
                 Создано: <strong>{{ timeCreated }}</strong>
             </div>
@@ -14,28 +17,39 @@
                 Комментариев: <strong>{{ commentsCount }}</strong>
             </div>
         </div>
-        <div class="article-item__info">
-            
+    
+        <div class="article-item__row"
+             v-if="isAuth"
+        >
+        
             <div class="button _orange _sm"
-                 @click.stop="toggleFavorite(article.id)">
+                 @click.stop="toggleFavorite(article.id)"
+            >
                 
                 <span v-if="isInFavorites(article.id)">
                     <span class="button__icon _active">❤</span>&nbsp;В избранном
                 </span>
-                
+            
                 <span v-else>
                     <span class="button__icon">❤</span>&nbsp;В избранное
                 </span>
-                
+        
             </div>
-            
-            <router-link class="button _green _sm"
+        
+            <router-link v-if="isCreator"
+                         class="button _green _sm"
                          :to="{ name: 'EditArticle', params: { id: article.id } }"
-                         @click.stop>
+                         @click.stop
+            >
                 Редактировать
             </router-link>
-            
-            <div class="button _red _sm" @click.stop="$emit('remove-article', article.id)">Удалить запись</div>
+        
+            <div v-if="isCreator"
+                 class="button _red _sm"
+                 @click.stop="$emit('remove-article', article.id)"
+            >
+                Удалить запись
+            </div>
         </div>
     </li>
 </template>
@@ -58,7 +72,16 @@
                     minute: 'numeric',
                     second: 'numeric'
                 });
-            }
+            },
+            
+            // todo заменить на mapGetters
+            isAuth() {
+                return this.$store.getters.isAuth;
+            },
+
+            isCreator() {
+                return this.article.creatorId === this.$store.getters.userId;
+            },
         },
         methods: {
             toggleFavorite(articleId) {
@@ -113,7 +136,7 @@
             max-height: 3 * 20px;
         }
         
-        &__info {
+        &__row {
             display: flex;
             align-items: center;
             margin-bottom: 20px;

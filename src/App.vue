@@ -4,14 +4,14 @@
     </div>
     
     <header class="header">
-        <button class="button" @click="getUserInfo()">Click</button>
         <div class="header__inner">
-            Избранное {{ favoritesCount }}
-        </div>
-        <div class="header__inner">
-            <div v-if="$store.getters.isAuthenticated" class="user-plate">
+            <button class="button" @click="getUserInfo()">Click</button>
+            <div>
+                Избранное {{ favoritesCount }}
+            </div>
+            <div v-if="$store.getters.isAuth" class="user-plate">
                 <span class="user-plate__icon">{{ $store.getters.userInitials }}</span>
-                <span class="user-plate__name">{{ $store.getters.userFullname }} (<a href="#" @click.prevent="logout()">выйти</a>)</span>
+                <span class="user-plate__name">{{ $store.getters.userFullName }} (<a href="#" @click.prevent="logout()">выйти</a>)</span>
             </div>
             <router-link v-else to="/auth" class="button">
                 Вход / Регистрация
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+    import createUrlService from './services/createUrlService';
 
     export default {
         components: {
@@ -54,20 +55,9 @@
             logout() {
                 this.$store.dispatch('logout');
             },
-            testButton() {
-                const url = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${this.$store.getters.token}`;
-                fetch(url)
-                    .then(response => {
-
-                        return response.json();
-    
-                    }).then(responseData => {
-                        console.log(responseData);
-                    });
-            },
             getUserInfo() {
                 
-                const url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyCkynVLaz8d5mCQCSdJHG_QBNmq6JpVR-4`;
+                const url = createUrlService.userInfo;
                 fetch(url,{
                     method: 'POST',
                     body: JSON.stringify({
@@ -128,8 +118,13 @@
     [v-cloak] {
         display: none;
     }
-    
-    input,
+
+    input[type="text"],
+    input[type="password"] {
+        height: 40px;
+    }
+    input[type="text"],
+    input[type="password"],
     textarea {
         border: 1px solid #ccc;
         outline: none !important;
@@ -156,7 +151,7 @@
     }
     
     input {
-        height: 40px;
+    
     }
     
     a {
@@ -180,6 +175,9 @@
         background-color: #eee;
         box-shadow: 0 0 20px 0 rgba(0,0,0,.3);
         &__inner {
+            display: flex;
+            justify-content: space-between;
+            
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;

@@ -38,6 +38,7 @@
 
 <script>
     import articleService from '../services/articleService';
+    import createUrlService from '../services/createUrlService';
     import ArticleListEmpty from '../components/ArticleListEmpty';
     import ArticleItem from '../components/ArticleItem';
 
@@ -55,7 +56,7 @@
 
                 // todo обсервер вынести за реактивность
                 observer: null,
-                loadingArticlesAmount: 5,
+                loadingArticlesNumber: 5,
                 
                 lastArticleCreatedTime: null
             }
@@ -68,11 +69,13 @@
 
             removeArticle(articleId) {
                 const indexForRemove = this.articlesList.findIndex(item => item.id === articleId );
-                const articleForRemove = this.articlesList[indexForRemove];
+                const url = createUrlService.article(articleId, this.$store.getters.token);
                 
+                //todo перенести обработку прогресса внутрь компоннета
+                const articleForRemove = this.articlesList[indexForRemove];
                 articleForRemove.isInProcessing = true;
 
-                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${articleId}.json`, {
+                fetch(url, {
                         method: 'DELETE'
                     })
                     .then(response => {
@@ -107,8 +110,10 @@
             
             additionalLoading() {
                 this.isAdditionalLoadingActive = true;
+                
+                const url = createUrlService.listOfAdditionalArticles(this.lastArticleCreatedTime - 1, this.loadingArticlesNumber);
 
-                fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?orderBy="timeCreated"&endAt=${this.lastArticleCreatedTime - 1}&limitToLast=${this.loadingArticlesAmount}`)
+                fetch(url)
                     .then(response => {
                         return response.json();
                     })
@@ -127,8 +132,10 @@
             },
         },
         created() {
-
-            fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?orderBy="timeCreated"&limitToLast=${this.loadingArticlesAmount}`)
+            
+            const url = createUrlService.listOfFirstArticles(this.loadingArticlesNumber);
+            
+            fetch(url)
                 .then(response => {
                     return response.json();
                 })

@@ -40,7 +40,7 @@
                 });
             },
             timeEdited() {
-                return !this.article.timeEdited ? null : new Date().toLocaleString("ru", {
+                return !this.article.timeEdited ? null : new Date(this.article.timeEdited).toLocaleString("ru", {
                     year: '2-digit',
                     month: 'long',
                     day: '2-digit',

@@ -19,6 +19,11 @@
         </div>
     
         <div class="form-edit-article__group">
+            <input v-model="isArchived" type="checkbox" id="isArchived">
+            <label for="isArchived">Поместить в архив</label>
+        </div>
+    
+        <div class="form-edit-article__group">
             <button class="button form-edit-article__button">Опубликовать статью</button>
             <div class="button _green form-edit-article__button" @click="autofill">Заполнить текстом</div>
         </div>
@@ -28,6 +33,7 @@
 <script>
     import { Form, Field, ErrorMessage } from 'vee-validate';
     import textService from '../services/textService';
+    import createUrlService from "../services/createUrlService";
     
     export default {
         components: {
@@ -43,6 +49,7 @@
                 name: '',
                 shortText: '',
                 fullText: '',
+                isArchived: false,
                 
                 isFormInProcess: false
             }
@@ -56,83 +63,101 @@
             },
             publishArticle(values, formActions) {
                 
-                if (!this.$store.getters.isAuthenticated) return;
+                // todo предусмотреть вывод сообщения об необходимости авторизоваться
+                // if (!this.$store.getters.isAuth) return;
                 
                 this.isFormInProcess = true;
 
                 // if we edit existing article
                 if (this.preloadArticleId !== undefined) {
                     
-                    const payload = {
-                        name: this.name,
-                        shortText: this.shortText,
-                        fullText: this.fullText,
-                        timeEdited: {
-                            '.sv': 'timestamp'
-                        }
-                    };
-                    fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.preloadArticleId}.json`, {
-                            method: 'PATCH',
-                            body: JSON.stringify(payload)
-                        }).then(response => {
-                            
-                            return response.json();
-                            
-                        }).then(responseData => {
-    
-                            this.isFormInProcess = false;
-                            
-                            formActions.resetForm();
-                            
-                            this.$emit('article-created', responseData.name)
-    
-                        });
+                    this.updateArticle(formActions);
                     
                     return;
                 }
-
-                // create new article
-                const payload = {
-                    name: this.name,
-                    shortText: this.shortText,
-                    fullText: this.fullText,
-                    creatorId: this.$store.getters.userId,
-                    creatorFullname: this.$store.getters.userFullname,
-                    timeCreated: {
-                        '.sv': 'timestamp'
-                    }
-                };
-                const url = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles.json?auth=${this.$store.getters.token}`;
-                fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                }).then(response => {
-                   
-                    return response.json();
                 
-                }).then(responseData => {
-                
-                    this.isFormInProcess = false;
-                   
-                    formActions.resetForm();
-                   
-                    this.$emit('article-created', responseData.name)
-                });
+                this.createArticle(formActions);
                 
             },
+            
             isRequired(value) {
                 if (!value.trim()) {
                     return 'Это поле обязательно';
                 }
                 return true;
             },
+            
+            createArticle(formActions) {
+                const url = createUrlService.articles(this.$store.getters.token);
+
+                const payload = {
+                    name: this.name,
+                    shortText: this.shortText,
+                    fullText: this.fullText,
+                    creatorId: this.$store.getters.userId,
+                    creatorFullName: this.$store.getters.userFullName,
+                    isArchived: this.isArchived,
+                    timeCreated: {
+                        '.sv': 'timestamp'
+                    }
+                };
+                
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                }).then(response => {
+
+                    return response.json();
+
+                }).then(responseData => {
+
+                    this.isFormInProcess = false;
+
+                    formActions.resetForm();
+
+                    this.$emit('article-created', responseData.name)
+                });
+            },
+            
+            updateArticle(formActions) {
+                const url = createUrlService.article(this.preloadArticleId, this.$store.getters.token);
+                
+                const payload = {
+                    name: this.name,
+                    shortText: this.shortText,
+                    fullText: this.fullText,
+                    isArchived: this.isArchived,
+                    timeEdited: {
+                        '.sv': 'timestamp'
+                    }
+                };
+
+                fetch(url, {
+                    method: 'PATCH',
+                    body: JSON.stringify(payload)
+                }).then(response => {
+
+                    return response.json();
+
+                }).then(responseData => {
+
+                    this.isFormInProcess = false;
+
+                    formActions.resetForm();
+
+                    this.$emit('article-created', responseData.name)
+
+                });
+            }
         },
         created() {
             if (this.preloadArticleId === undefined) return;
             
             this.isFormInProcess = true;
+            
+            const url = createUrlService.article(this.preloadArticleId);
 
-            fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.preloadArticleId}.json`)
+            fetch(url)
                 .then(response => {
                     return response.json();
                 })
@@ -140,6 +165,7 @@
                     this.name = responseData.name;
                     this.shortText = responseData.shortText;
                     this.fullText = responseData.fullText;
+                    this.isArchived = responseData.isArchived;
                 })
                 .finally(() => {
                     this.isFormInProcess = false;
