@@ -1,17 +1,17 @@
 
 function prepareComments(commentsObj) {
-    let commentList = [];
+    let commentsList = [];
 
     for(let commentId in commentsObj) {
-        commentsObj[commentId].commentList = prepareComments(commentsObj[commentId].commentList);
+        commentsObj[commentId].commentsList = prepareComments(commentsObj[commentId].commentsList);
 
-        commentList.push({
+        commentsList.push({
             id: commentId,
             ...commentsObj[commentId]
         });
     }
 
-    return commentList;
+    return commentsList;
 
 }
 
@@ -21,7 +21,7 @@ export default {
         let articlesList = [];
 
         for(let id in articlesObject) {
-            articlesObject[id].commentList = prepareComments(articlesObject[id].commentList);
+            articlesObject[id].commentsList = prepareComments(articlesObject[id].commentsList);
             articlesList.push({
                 id: id,
                 ...articlesObject[id]
@@ -34,7 +34,7 @@ export default {
     prepareArticle(articleObj, articleId) {
 
         articleObj.id = articleId;
-        articleObj.commentList = prepareComments(articleObj.commentList);
+        articleObj.commentsList = [];
 
         return articleObj;
     }

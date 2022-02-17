@@ -35,8 +35,21 @@ export default {
     prepareFullName(name, secondName) {
         return `${normalizeName(name)} ${normalizeName(secondName)}`
     },
+
     getInitialsFromFullName(fullName) {
         return fullName.split(' ').map(item => item[0]).join('');
+    },
+
+    getFormattedTime(timeInMs) {
+        return new Date(timeInMs).toLocaleString("ru",{
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: 'numeric',
+            second: 'numeric'
+        });
+
     }
 };
 

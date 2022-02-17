@@ -13,9 +13,6 @@
             <div>
                 Создано: <strong>{{ timeCreated }}</strong>
             </div>
-            <div>
-                Комментариев: <strong>{{ commentsCount }}</strong>
-            </div>
         </div>
     
         <div class="article-item__row"
@@ -55,14 +52,9 @@
 </template>
 
 <script>
-    import commentsService from "../services/commentsService";
-    
     export default {
         props: ['article'],
         computed: {
-            commentsCount() {
-                return commentsService.countComments( this.article.commentList, 0 );
-            },
             timeCreated() {
                 return new Date(this.article.timeCreated).toLocaleString("ru", {
                     year: '2-digit',

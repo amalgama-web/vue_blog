@@ -1,20 +1,48 @@
 export default {
-    countComments(list) {
+    countCommentsInTree(list) {
         let counter = 0;
         for (let i = 0; i < list.length; i++) {
             counter++;
-            if(list[i].commentList) {
-                counter += this.countComments(list[i].commentList);
+            if(list[i].commentsList) {
+                counter += this.countCommentsInTree(list[i].commentsList);
             }
         }
         return counter;
     },
-    findTargetList(commentList, branchNodes, currentDepth = 0) {
-        if(currentDepth === branchNodes.length) return commentList;
 
-        const commentNode = commentList.find(commentNode => commentNode.id === branchNodes[currentDepth]);
+    prepareCommentsFlatList(commentsObj) {
+        const commentsFlatList = [];
 
-        return this.findTargetList(commentNode.commentList, branchNodes, ++currentDepth);
+        for(let id in commentsObj) {
+            commentsFlatList.push({
+                id: id,
+                commentsList: [],
+                ...commentsObj[id],
+            });
+        }
+
+        return commentsFlatList;
+    },
+
+    createCommentsTreeList(commentsFlatList) {
+        const commentsTreeList = [];
+
+        commentsFlatList.forEach(commentItem => {
+
+            // is root comment
+            if(commentItem.parentCommentId === undefined) {
+                commentsTreeList.push(commentItem);
+                return;
+            }
+
+            // is child comment
+            const parentComment = commentsFlatList.find(comment => comment.id === commentItem.parentCommentId);
+            if (parentComment) parentComment.commentsList.push(commentItem);
+
+
+        });
+
+        return commentsTreeList;
     }
 
 };

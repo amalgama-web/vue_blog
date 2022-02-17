@@ -2,12 +2,6 @@
     <Form class="comment-form" @submit="createComment" :class="{'_element-processing': isFormInProcess}">
     
         <div class="comment-form__group">
-            <div class="field-label">Ваше имя:</div>
-            <Field v-model="userName" name="userName" type="text" placeholder="Ваше имя" :rules="isRequired"/>
-            <ErrorMessage name="userName" class="error-message comment-form__error"></ErrorMessage>
-        </div>
-        
-        <div class="comment-form__group">
             <div class="field-label">Ваш комментарий:</div>
             <Field v-model="text" name="text" type="text" placeholder="Введите текст комментария" :rules="isRequired" as="textarea"/>
             <ErrorMessage name="text" class="error-message comment-form__error"></ErrorMessage>
@@ -31,13 +25,11 @@
         },
         inject: ['addComment'],
 
-        props: ['articleId', 'commentBranch'],
+        props: ['articleId', 'parentCommentId'],
         
         data() {
             return {
-                userName: '',
                 text: '',
-                
                 isFormInProcess: false
             }
         },
@@ -46,9 +38,9 @@
             createComment(values, formActions) {
                 this.isFormInProcess = true;
                 this.addComment({
-                        userName: this.userName,
-                        text: this.text
-                    }, this.commentBranch)
+                        text: this.text,
+                        parentCommentId: this.parentCommentId
+                    })
                     .then(() => {
                         formActions.resetForm();
                         this.isFormInProcess = false;
@@ -57,7 +49,6 @@
             },
             
             autofill() {
-                this.userName = textService.getRandomName();
                 this.text = textService.getRandomSentences(4);
             },
             

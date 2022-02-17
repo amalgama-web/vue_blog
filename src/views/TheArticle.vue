@@ -4,20 +4,30 @@
             ← К списку статей
         </router-link>
         
-        <div class="preloader-wrap" v-if="!isDataLoaded">
+        <div class="preloader-wrap" v-if="!isArticleDataLoaded">
             <div class="preloader"></div>
         </div>
     
         <div v-else-if="isArticleExist">
-            <article-block :article="currentArticle" @remove-article="removeArticle"></article-block>
-        
-            <comment-block :comment-list="currentArticle.commentList"></comment-block>
-        
-            <div class="button" @click="toggleCommentForm" v-show="!isCommentFormOpen">Добавить комментарий</div>
+    
+            <article-block :article="currentArticle"
+                           @remove-article="removeArticle"
+            ></article-block>
+    
+            <comment-block v-if="isCommentsDataLoaded"
+                           :comments-list="currentArticle.commentsList"
+                           :comments-count="commentsCount"
+            ></comment-block>
+            
+            <div class="button"
+                 @click="toggleCommentForm"
+                 v-show="!isCommentFormOpen"
+            >Добавить комментарий
+            </div>
+    
             <form-new-comment
                     v-show="isCommentFormOpen"
                     @comment-created="toggleCommentForm"
-                    comment-branch=""
             ></form-new-comment>
         </div>
         
@@ -57,9 +67,16 @@
             return {
                 currentArticle: null,
                 
-                isDataLoaded: false,
+                isArticleDataLoaded: false,
+                isCommentsDataLoaded: false,
                 isCommentFormOpen: false,
                 isArticleExist: true
+            }
+        },
+        
+        computed: {
+            commentsCount() {
+                return commentsService.countCommentsInTree(this.currentArticle.commentsList);
             }
         },
         
@@ -68,62 +85,89 @@
                 this.isCommentFormOpen = !this.isCommentFormOpen;
             },
             
-            addComment(commentData, commentBranch) {
+            addComment(commentData) {
                 
-                const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
+                const url = createUrlService.commentsAdd(this.currentArticle.id, this.$store.getters.token);
+                const payload = {
+                    timeCreated: {
+                        '.sv': 'timestamp'
+                    },
+                    creatorId: this.$store.getters.userId,
+                    userName: this.$store.getters.userFullName,
+                    text: commentData.text,
+                    parentCommentId: commentData.parentCommentId
+                };
                 
-                const commentBranchPath = commentBranchNodesIds.map(nodeId => `/${nodeId}/commentList`).join('');
-                
-                const targetCommentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
-                
-                return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}/commentList${commentBranchPath}.json`, {
+                return fetch(url, {
                         method: 'POST',
-                        body: JSON.stringify({
-                            timeCreated: {
-                                '.sv': 'timestamp'
-                            },
-                            ...commentData
-                        })
+                        body: JSON.stringify(payload)
                     })
                     .then(response => {
                         return response.json();
                     })
                     .then(responseData => {
-                        targetCommentList.push({
+                        
+                        const newCommentObj = {
                             id: responseData.name,
-                            commentList: [],
-                            timeCreated: new Date().getTime(),
-                            ...commentData
-                        });
+                            creatorId: this.$store.getters.userId,
+                            userName: this.$store.getters.userFullName,
+                            text: commentData.text,
+                            parentCommentId: commentData.parentCommentId,
+                            commentsList: [],
+                            timeCreated: new Date().getTime()
+                        };
+                        
+                        if(commentData.parentCommentId) {
+                            // is child
+                            const parentComment = this.currentArticle.commentsFlatList.find(comment => comment.id === commentData.parentCommentId);
+                            parentComment.commentsList.push(newCommentObj);
+                        } else {
+                            // is root
+                            this.currentArticle.commentsList.push(newCommentObj);
+                        }
+                        this.currentArticle.commentsFlatList.push(newCommentObj);
+                        
+                    })
+            },
+            
+            removeComment(commentId) {
+                
+                const url = createUrlService.commentEdit(this.currentArticle.id, commentId, this.$store.getters.token);
+                
+                return fetch(url, {
+                        method: 'PATCH',
+                        body: JSON.stringify({
+                            isDeleted: true
+                        })
+                    })
+                    .then(response => {
+                        if(response.ok) {
+                            this.removeCommentLocal(commentId);
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        // parentList.splice(targetIndex, 1);
                     })
                     .finally(() => {
                     });
             },
             
-            removeComment(commentBranch) {
+            removeCommentLocal(commentId) {
+                const targetComment = this.currentArticle.commentsFlatList.find(comment => comment.id === commentId);
+                const parentCommentId = targetComment.parentCommentId;
                 
-                const commentBranchNodesIds = commentBranch.split('/').filter(item => item !== '');
-                
-                const commentBranchPath = commentBranchNodesIds.map(nodeId => `/commentList/${nodeId}`).join('');
-                
-                const targetCommentId = commentBranchNodesIds.pop();
-                
-                const parentList = commentsService.findTargetList(this.currentArticle.commentList, commentBranchNodesIds);
-                
-                const targetIndex = parentList.findIndex(commentItem => commentItem.id === targetCommentId);
-                
-                return fetch(`https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/articles/${this.currentArticle.id}${commentBranchPath}.json`, {
-                        method: 'DELETE'
-                    })
-                    .then(response => {
-                        return response.json();
-                    })
-                    .then(() => {
-                        parentList.splice(targetIndex, 1);
-                    })
-                    .finally(() => {
-                    });
-                
+                if(parentCommentId) {
+                    const parentComment = this.currentArticle.commentsFlatList.find(commentItem => commentItem.id === parentCommentId);
+                    const parentCommentsList = parentComment.commentsList;
+                    
+                    parentCommentsList.splice( parentCommentsList.indexOf(targetComment), 1);
+                    
+                } else {
+                    
+                    this.currentArticle.commentsList.splice(this.currentArticle.commentsList.indexOf(targetComment), 1);
+                    
+                }
             },
 
             removeArticle(articleId) {
@@ -147,8 +191,11 @@
             }
         },
         
+        // todo async await
         created() {
+            
             const url = createUrlService.article(this.$route.params.id);
+            
             fetch(url)
                 .then(response => {
                     return response.json();
@@ -156,12 +203,30 @@
                 .then(responseData => {
                     if (responseData === null) {
                         this.isArticleExist = false;
+                        // todo
                         return;
                     }
                     this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
+                    this.isArticleDataLoaded = true;
+                    
+                    const url = createUrlService.listComments(this.$route.params.id);
+                    return fetch(url);
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(responseData => {
+                    
+                    const commentsFlatList = commentsService.prepareCommentsFlatList(responseData);
+                    const commentsTreeList = commentsService.createCommentsTreeList(commentsFlatList);
+                    
+                    this.currentArticle.commentsList = commentsTreeList;
+                    this.currentArticle.commentsFlatList = commentsFlatList;
+                    
+                    this.isCommentsDataLoaded = true;
+                    
                 })
                 .finally(() => {
-                    this.isDataLoaded = true;
                 });
         }
     }

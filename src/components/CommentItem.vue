@@ -2,27 +2,48 @@
     <div class="comment-wrap" :class="{'_element-processing': isInProcessing}">
         
         <div class="comment-item">
+            
             <div class="comment-item__head">
                 <span class="comment-item__name">{{ commentData.userName }}</span>&nbsp;
                 <span class="comment-item__time">{{ commentCreatedTime }}</span>
             </div>
+            
             <div class="comment-item__text">{{ commentData.text }}</div>
-            <div class="button _sm _green" @click="toggleAnswerForm">{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}</div>
-            <div class="button _sm _red" @click="remove(commentBranch)">Удалить комментарий</div>
+    
+            <div v-if="isAuth">
+                
+                <div class="button _sm _green"
+                     @click="toggleAnswerForm"
+                >{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}
+                </div>
+                
+                <div v-if="isCreatorComment"
+                     class="button _sm _red"
+                     @click="remove()"
+                >Удалить комментарий
+                </div>
+                
+            </div>
+            
         </div>
     
         <div class="comment-wrap__answers">
-            
-            <div class="comment-wrap__answer-form" v-show="isAnswerFormActive">
-                <form-new-comment :comment-branch="commentBranch"
-                                  @comment-created="toggleAnswerForm"></form-new-comment>
+    
+            <div class="comment-wrap__answer-form"
+                 v-show="isAnswerFormActive"
+            >
+                <form-new-comment :parent-comment-id="commentData.id"
+                                  @comment-created="toggleAnswerForm"
+                ></form-new-comment>
             </div>
     
-            <div class="comment-wrap__childs" v-if="commentData.commentList">
-                <comment-item v-for="childComment in commentData.commentList"
+            <div class="comment-wrap__childs"
+                 v-if="commentData.commentsList"
+            >
+                <comment-item v-for="childComment in commentData.commentsList"
                               :key="childComment.id"
                               :comment-data="childComment"
-                              :comment-branch="commentBranch + '/' + childComment.id">
+                >
                 </comment-item>
             </div>
             
@@ -33,13 +54,14 @@
 
 <script>
     import FormNewComment from '../components/FormNewComment';
+    import textService from "../services/textService";
 
     export default {
         components: {
             FormNewComment
         },
         inject: ['removeComment'],
-        props: ['commentData', 'articleId', 'commentBranch'],
+        props: ['commentData'],
         data() {
             return {
                 isInProcessing: false,
@@ -48,23 +70,22 @@
         },
         computed: {
             commentCreatedTime() {
-                return new Date(this.commentData.timeCreated).toLocaleString("ru",{
-                    year: '2-digit',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: 'numeric',
-                    second: 'numeric'
-                });
+                return textService.getFormattedTime(this.commentData.timeCreated);
+            },
+            isCreatorComment() {
+                return this.commentData.creatorId === this.$store.getters.userId;
+            },
+            isAuth() {
+                return this.$store.getters.isAuth;
             }
         },
         methods: {
             toggleAnswerForm() {
                 this.isAnswerFormActive = !this.isAnswerFormActive;
             },
-            remove(commentBranch) {
+            remove() {
                 this.isInProcessing = true;
-                this.removeComment(commentBranch);
+                this.removeComment(this.commentData.id);
             }
         },
     }

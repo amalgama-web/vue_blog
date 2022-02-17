@@ -1,5 +1,5 @@
 
-const DB_URL = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app/`;
+const DB_URL = `https://blogdb-8522b-default-rtdb.europe-west1.firebasedatabase.app`;
 
 const API_KEY = `AIzaSyCkynVLaz8d5mCQCSdJHG_QBNmq6JpVR-4`;
 
@@ -8,14 +8,14 @@ export default {
 
     listOfFirstArticles(numbersOfArticles) {
         return DB_URL +
-            `articles.json` +
+            `/articles.json` +
             `?orderBy="timeCreated"` +
             `&limitToLast=${numbersOfArticles}`;
     },
 
     listOfAdditionalArticles(olderThan, numbersOfArticles) {
         return DB_URL +
-            `articles.json` +
+            `/articles.json` +
             `?orderBy="timeCreated"` +
             `&endAt=${olderThan}` +
             `&limitToLast=${numbersOfArticles}`;
@@ -23,16 +23,41 @@ export default {
 
     article(articleId, token = '') {
         return DB_URL +
-            `articles/` +
-            `${articleId}.json` +
+            `/articles` +
+            `/${articleId}.json` +
             (token ? `?auth=${token}` : '');
     },
 
     articles(token) {
         return DB_URL +
-            `articles.json` +
+            `/articles.json` +
             `?auth=${token}`;
     },
+
+    listComments(articleId) {
+        return DB_URL +
+            `/comments` +
+            `/${articleId}.json` +
+            `?orderBy="isDeleted"` +
+            `&equalTo=null`;
+    },
+
+    commentsAdd(articleId, token) {
+        return DB_URL +
+            `/comments` +
+            `/${articleId}.json` +
+            `?auth=${token}`;
+    },
+
+    commentEdit(articleId, commentId, token) {
+        return DB_URL +
+            `/comments` +
+            `/${articleId}` +
+            `/${commentId}.json` +
+            `?auth=${token}`;
+    },
+
+
 
     signUp: `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
 
