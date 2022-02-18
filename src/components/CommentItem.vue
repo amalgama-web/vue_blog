@@ -85,7 +85,9 @@
             },
             remove() {
                 this.isInProcessing = true;
-                this.removeComment(this.commentData.id);
+                this.removeComment(this.commentData.id).finally( () => {
+                    this.isInProcessing = false;
+                });
             }
         },
     }

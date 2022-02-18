@@ -23,9 +23,9 @@
             Field,
             ErrorMessage
         },
-        inject: ['addComment'],
+        inject: ['addComment', 'showNotification'],
 
-        props: ['articleId', 'parentCommentId'],
+        props: ['parentCommentId'],
         
         data() {
             return {
@@ -37,15 +37,18 @@
         methods: {
             createComment(values, formActions) {
                 this.isFormInProcess = true;
+                
                 this.addComment({
-                        text: this.text,
-                        parentCommentId: this.parentCommentId
-                    })
-                    .then(() => {
-                        formActions.resetForm();
-                        this.isFormInProcess = false;
-                        this.$emit('comment-created');
-                    });
+                    text: this.text,
+                    parentCommentId: this.parentCommentId
+                }).finally(() => {
+                    formActions.resetForm();
+
+                    this.isFormInProcess = false;
+
+                    this.$emit('comment-created');
+                });
+                
             },
             
             autofill() {

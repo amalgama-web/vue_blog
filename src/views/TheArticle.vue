@@ -7,6 +7,10 @@
         <div class="preloader-wrap" v-if="!isArticleDataLoaded">
             <div class="preloader"></div>
         </div>
+        
+        <div v-else-if="isArticleLoadingError">
+            Ошибка при загрузке статьи
+        </div>
     
         <div v-else-if="isArticleExist">
     
@@ -61,7 +65,7 @@
             }
         },
         
-        inject: ['showPageloader', 'hidePageloader'],
+        inject: ['showPageloader', 'hidePageloader', 'showNotification'],
         
         data() {
             return {
@@ -69,8 +73,12 @@
                 
                 isArticleDataLoaded: false,
                 isCommentsDataLoaded: false,
-                isCommentFormOpen: false,
-                isArticleExist: true
+
+                isArticleExist: true,
+                isArticleLoadingError: false,
+                isCommentsLoadingError: false,
+                
+                isCommentFormOpen: false
             }
         },
         
@@ -85,9 +93,10 @@
                 this.isCommentFormOpen = !this.isCommentFormOpen;
             },
             
-            addComment(commentData) {
+            async addComment(commentData) {
                 
                 const url = createUrlService.commentsAdd(this.currentArticle.id, this.$store.getters.token);
+                
                 const payload = {
                     timeCreated: {
                         '.sv': 'timestamp'
@@ -98,62 +107,67 @@
                     parentCommentId: commentData.parentCommentId
                 };
                 
-                return fetch(url, {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => {
-                        return response.json();
-                    })
-                    .then(responseData => {
-                        
-                        const newCommentObj = {
-                            id: responseData.name,
-                            creatorId: this.$store.getters.userId,
-                            userName: this.$store.getters.userFullName,
-                            text: commentData.text,
-                            parentCommentId: commentData.parentCommentId,
-                            commentsList: [],
-                            timeCreated: new Date().getTime()
-                        };
-                        
-                        if(commentData.parentCommentId) {
-                            // is child
-                            const parentComment = this.currentArticle.commentsFlatList.find(comment => comment.id === commentData.parentCommentId);
-                            parentComment.commentsList.push(newCommentObj);
-                        } else {
-                            // is root
-                            this.currentArticle.commentsList.push(newCommentObj);
-                        }
-                        this.currentArticle.commentsFlatList.push(newCommentObj);
-                        
-                    })
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                if(!response.ok) {
+                    this.showNotification('Ошибка загрузки комментария, попробуйте позже...', 'error');
+                    return;
+                }
+                
+                
+                const responseData = await response.json();
+
+                this.addCommentLocally(responseData.name, commentData);
+
             },
             
-            removeComment(commentId) {
+            addCommentLocally(commentId, commentData) {
+                const newCommentObj = {
+                    id: commentId,
+                    creatorId: this.$store.getters.userId,
+                    userName: this.$store.getters.userFullName,
+                    text: commentData.text,
+                    parentCommentId: commentData.parentCommentId,
+                    commentsList: [],
+                    timeCreated: new Date().getTime()
+                };
+                if(commentData.parentCommentId) {
+                    // is child comment
+                    const parentComment = this.currentArticle.commentsFlatList.find(comment => comment.id === commentData.parentCommentId);
+                    parentComment.commentsList.push(newCommentObj);
+                } else {
+                    // is root comment
+                    this.currentArticle.commentsList.push(newCommentObj);
+                }
+                
+                this.currentArticle.commentsFlatList.push(newCommentObj);
+            },
+            
+            async removeComment(commentId) {
                 
                 const url = createUrlService.commentEdit(this.currentArticle.id, commentId, this.$store.getters.token);
                 
-                return fetch(url, {
-                        method: 'PATCH',
-                        body: JSON.stringify({
-                            isDeleted: true
-                        })
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    // body: 'asdf'
+                    body: JSON.stringify({
+                        isDeleted: true
                     })
-                    .then(response => {
-                        if(response.ok) {
-                            this.removeCommentLocal(commentId);
-                        }
-                        return response.json();
-                    })
-                    .then(() => {
-                        // parentList.splice(targetIndex, 1);
-                    })
-                    .finally(() => {
-                    });
+                });
+                console.log(response);
+                
+                if(response.ok) {
+                    this.removeCommentLocally(commentId);
+                } else {
+                    this.showNotification('Ошибка при удалении комментария, попробуйте позже...', 'error');
+                }
+                    
             },
-            
-            removeCommentLocal(commentId) {
+
+            removeCommentLocally(commentId) {
                 const targetComment = this.currentArticle.commentsFlatList.find(comment => comment.id === commentId);
                 const parentCommentId = targetComment.parentCommentId;
                 
@@ -164,9 +178,7 @@
                     parentCommentsList.splice( parentCommentsList.indexOf(targetComment), 1);
                     
                 } else {
-                    
                     this.currentArticle.commentsList.splice(this.currentArticle.commentsList.indexOf(targetComment), 1);
-                    
                 }
             },
 
@@ -188,46 +200,58 @@
                         this.hidePageloader();
                         this.$router.push({ name: 'Home' });
                     });
-            }
+            },
+
+            async loadArticle() {
+                const url = createUrlService.article(this.$route.params.id);
+                let response = await fetch(url);
+
+                if(!response.ok) {
+                    this.isArticleLoadingError = true;
+                    this.isArticleDataLoaded = true;
+                    throw new Error('Ошибка получения данных статьи, попробуйте позже...');
+                }
+
+                const responseData  = await response.json();
+
+                if (!responseData) {
+                    this.isArticleExist = false;
+                    this.isArticleLoadingError = true;
+                    throw new Error('Такой статьи не существует');
+                }
+
+                this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
+                this.isArticleDataLoaded = true;
+            },
+            
+            async loadComments() {
+                const url = createUrlService.listComments(this.$route.params.id);
+                const response = await fetch(url);
+
+                if(!response.ok) {
+                    throw new Error('Ошибка загрузки комментариев')
+                }
+
+                const responseData = await response.json();
+
+                this.currentArticle.commentsFlatList = commentsService.prepareCommentsFlatList(responseData);
+                this.currentArticle.commentsList = commentsService.createCommentsTreeList(this.currentArticle.commentsFlatList);
+                this.isCommentsDataLoaded = true;
+
+            },
+
+            
         },
         
-        // todo async await
-        created() {
+        async created() {
             
-            const url = createUrlService.article(this.$route.params.id);
-            
-            fetch(url)
-                .then(response => {
-                    return response.json();
-                })
-                .then(responseData => {
-                    if (responseData === null) {
-                        this.isArticleExist = false;
-                        // todo
-                        return;
-                    }
-                    this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
-                    this.isArticleDataLoaded = true;
-                    
-                    const url = createUrlService.listComments(this.$route.params.id);
-                    return fetch(url);
-                })
-                .then(response => {
-                    return response.json();
-                })
-                .then(responseData => {
-                    
-                    const commentsFlatList = commentsService.prepareCommentsFlatList(responseData);
-                    const commentsTreeList = commentsService.createCommentsTreeList(commentsFlatList);
-                    
-                    this.currentArticle.commentsList = commentsTreeList;
-                    this.currentArticle.commentsFlatList = commentsFlatList;
-                    
-                    this.isCommentsDataLoaded = true;
-                    
-                })
-                .finally(() => {
-                });
+            try {
+                await this.loadArticle();
+                await this.loadComments();
+            } catch (err) {
+                console.log(err.message);
+                this.showNotification(err.message, 'error');
+            }
         }
     }
 </script>

@@ -197,11 +197,11 @@ const store = createStore({
             if (!userData) return;
 
             context.commit('setUser', userData);
-            context.dispatch('preloadFavorites');
+            // context.dispatch('preloadFavorites');
         },
 
         setUser(context, userData) {
-            context.commit('setUser', userData)
+            context.commit('setUser', userData);
             localStorage.setItem('userData', JSON.stringify(userData));
         },
 

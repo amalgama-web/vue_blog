@@ -21,7 +21,7 @@ export default {
             });
         }
 
-        return commentsFlatList;
+        return commentsFlatList.sort((item1, item2) => item1.timeCreated - item2.timeCreated );
     },
 
     createCommentsTreeList(commentsFlatList) {

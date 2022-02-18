@@ -24,6 +24,7 @@ export default {
     article(articleId, token = '') {
         return DB_URL +
             `/articles` +
+            // `/${articleId}` +
             `/${articleId}.json` +
             (token ? `?auth=${token}` : '');
     },

@@ -1,4 +1,11 @@
 <template>
+    
+    <base-notification :text="notificationMessage"
+                       :type="notificationType"
+                       :is-visible="notificationVisible"
+                       @hide-notification="hideNotification"
+    ></base-notification>
+    
     <div class="page-preloader" v-if="isPageloaderVisible">
         <div class="preloader"></div>
     </div>
@@ -25,19 +32,27 @@
 
 <script>
     import createUrlService from './services/createUrlService';
+    import BaseNotification from './components/BaseNotification';
 
     export default {
         components: {
+            BaseNotification
         },
         provide() {
             return {
                 showPageloader: this.showPageloader,
                 hidePageloader: this.hidePageloader,
+                
+                showNotification: this.showNotification,
             }
         },
         data() {
             return {
-                isPageloaderVisible: false
+                isPageloaderVisible: false,
+                
+                notificationMessage: '',
+                notificationVisible: false,
+                notificationType: ''
             }
         },
         computed: {
@@ -49,12 +64,25 @@
             showPageloader() {
                 this.isPageloaderVisible = true;
             },
+            
             hidePageloader() {
                 this.isPageloaderVisible = false;
             },
+            
+            showNotification(text, type) {
+                this.notificationVisible = true;
+                this.notificationMessage = text;
+                this.notificationType = type;
+            },
+            
+            hideNotification() {
+                this.notificationVisible = false;
+            },
+            
             logout() {
                 this.$store.dispatch('logout');
             },
+            
             getUserInfo() {
                 
                 const url = createUrlService.userInfo;
