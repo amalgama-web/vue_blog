@@ -108,6 +108,11 @@
                 this.observer = null;
             },
             
+            stopAdditionalLoading() {
+                this.destroyLoadingObserver();
+                this.isAllArticlesLoaded = true;
+            },
+            
             additionalLoading() {
                 this.isAdditionalLoadingActive = true;
                 
@@ -119,40 +124,50 @@
                     })
                     .then(responseData => {
                         if (responseData === null) {
-                            this.destroyLoadingObserver();
-                            this.isAllArticlesLoaded = true;
+                            this.stopAdditionalLoading();
                             return;
                         }
-                        this.articlesList.push( ...articleService.prepareArticlesList(responseData) );
+                        
+                        const additionalList = articleService.prepareArticlesList(responseData);
+                        
+                        this.articlesList.push( ... additionalList);
+                        
                         this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
+                        
+                        if(additionalList.length < this.loadingArticlesNumber) {
+                            this.stopAdditionalLoading();
+                        }
                     })
                     .finally(() => {
                         this.isAdditionalLoadingActive = false;
                     });
             },
+            
+            initialLoading() {
+                const url = createUrlService.listOfFirstArticles(this.loadingArticlesNumber);
+
+                fetch(url)
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(responseData => {
+                        if (responseData === null) return;
+
+                        this.articlesList = articleService.prepareArticlesList(responseData);
+                        this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
+                        this.isInitialDataLoaded = true;
+
+                        this.$nextTick( () => {
+                            this.createLoadingObserver();
+                        });
+                    })
+                    .finally(() => {
+                        this.isInitialDataLoaded = true;
+                    });
+            }
         },
         created() {
-            
-            const url = createUrlService.listOfFirstArticles(this.loadingArticlesNumber);
-            
-            fetch(url)
-                .then(response => {
-                    return response.json();
-                })
-                .then(responseData => {
-                    if (responseData === null) return;
-                    
-                    this.articlesList = articleService.prepareArticlesList(responseData);
-                    this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
-                    this.isInitialDataLoaded = true;
-
-                    this.$nextTick( () => {
-                        this.createLoadingObserver();
-                    });
-                })
-                .finally(() => {
-                    this.isInitialDataLoaded = true;
-                });
+            this.initialLoading();
         }
     }
 

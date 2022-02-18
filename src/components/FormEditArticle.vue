@@ -18,9 +18,12 @@
             <ErrorMessage class="error-message form-edit-article__error" name="fullText"></ErrorMessage>
         </div>
     
-        <div class="form-edit-article__group">
+        <div v-if="isArticleEdit"
+             class="form-edit-article__group"
+        >
             <input v-model="isArchived" type="checkbox" id="isArchived">
             <label for="isArchived">Поместить в архив</label>
+            <p class="form-edit-article__info-text">Статья будет перемещана в архив и не будет выводиться в списке на главной странице, вы можете найти статью в профиле, в разделе архив статей и вновь опубликовать ее.</p>
         </div>
     
         <div class="form-edit-article__group">
@@ -44,14 +47,23 @@
         
         props: ['preloadArticleId'],
         
+        inject: ['showNotification'],
+        
         data() {
             return {
                 name: '',
                 shortText: '',
                 fullText: '',
+                timeCreated: null,
                 isArchived: false,
                 
                 isFormInProcess: false
+            }
+        },
+        
+        computed: {
+            isArticleEdit() {
+                return this.preloadArticleId !== undefined;
             }
         },
 
@@ -69,7 +81,7 @@
                 this.isFormInProcess = true;
 
                 // if we edit existing article
-                if (this.preloadArticleId !== undefined) {
+                if (this.isArticleEdit) {
                     
                     this.updateArticle(formActions);
                     
@@ -96,7 +108,6 @@
                     fullText: this.fullText,
                     creatorId: this.$store.getters.userId,
                     creatorFullName: this.$store.getters.userFullName,
-                    isArchived: this.isArchived,
                     timeCreated: {
                         '.sv': 'timestamp'
                     }
@@ -122,11 +133,13 @@
             updateArticle(formActions) {
                 const url = createUrlService.article(this.preloadArticleId, this.$store.getters.token);
                 
+                const timeCreated = Math.abs(this.timeCreated);
+                
                 const payload = {
                     name: this.name,
                     shortText: this.shortText,
                     fullText: this.fullText,
-                    isArchived: this.isArchived,
+                    timeCreated: this.isArchived ? -timeCreated : timeCreated,
                     timeEdited: {
                         '.sv': 'timestamp'
                     }
@@ -148,28 +161,44 @@
                     this.$emit('article-created', responseData.name)
 
                 });
-            }
-        },
-        created() {
-            if (this.preloadArticleId === undefined) return;
-            
-            this.isFormInProcess = true;
-            
-            const url = createUrlService.article(this.preloadArticleId);
+            },
 
-            fetch(url)
-                .then(response => {
-                    return response.json();
-                })
-                .then(responseData => {
+            async preloadArticle() {
+                this.isFormInProcess = true;
+
+                try {
+                    const url = createUrlService.article(this.preloadArticleId);
+                    
+                    const response = await fetch(url);
+
+                    if(!response.ok) {
+                        throw new Error('Ошибка загрузки статьи');
+                    }
+
+                    const responseData = await response.json();
+
+                    if(!responseData) {
+                        throw new Error('Статья не найдена');
+                    }
+                    
                     this.name = responseData.name;
                     this.shortText = responseData.shortText;
                     this.fullText = responseData.fullText;
-                    this.isArchived = responseData.isArchived;
-                })
-                .finally(() => {
+                    this.timeCreated = responseData.timeCreated;
+                    this.isArchived = responseData.timeCreated < 0;
+
+                } catch (err) {
+                
+                    this.showNotification(err.message, 'error');
+                
+                } finally {
                     this.isFormInProcess = false;
-                });
+                }
+            },
+        },
+        
+        created() {
+            if (this.isArticleEdit) this.preloadArticle();
         }
     }
 </script>
@@ -193,6 +222,11 @@
         }
         &__button {
             margin: 10px 30px 0 0;
+        }
+        &__info-text {
+            font-size: 13px;
+            color: #999;
+            margin: 5px 0 0 0;
         }
     }
 </style>

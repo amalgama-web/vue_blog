@@ -10,6 +10,7 @@ export default {
         return DB_URL +
             `/articles.json` +
             `?orderBy="timeCreated"` +
+            `&startAt=0` +
             `&limitToLast=${numbersOfArticles}`;
     },
 
@@ -17,14 +18,21 @@ export default {
         return DB_URL +
             `/articles.json` +
             `?orderBy="timeCreated"` +
+            `&startAt=0` +
             `&endAt=${olderThan}` +
             `&limitToLast=${numbersOfArticles}`;
+    },
+
+    listOfArchivedlArticles() {
+        return DB_URL +
+            `/articles.json` +
+            `?orderBy="timeCreated"` +
+            `&endAt=0`;
     },
 
     article(articleId, token = '') {
         return DB_URL +
             `/articles` +
-            // `/${articleId}` +
             `/${articleId}.json` +
             (token ? `?auth=${token}` : '');
     },

@@ -1,34 +1,17 @@
-
-function prepareComments(commentsObj) {
-    let commentsList = [];
-
-    for(let commentId in commentsObj) {
-        commentsObj[commentId].commentsList = prepareComments(commentsObj[commentId].commentsList);
-
-        commentsList.push({
-            id: commentId,
-            ...commentsObj[commentId]
-        });
-    }
-
-    return commentsList;
-
-}
-
 export default {
     prepareArticlesList(articlesObject) {
 
         let articlesList = [];
 
         for(let id in articlesObject) {
-            articlesObject[id].commentsList = prepareComments(articlesObject[id].commentsList);
             articlesList.push({
                 id: id,
                 ...articlesObject[id]
             });
         }
 
-        return articlesList.reverse();
+        // соритровка - сперва более новые статьи
+        return articlesList.sort((item1, item2) => item2.timeCreated - item1.timeCreated );
     },
 
     prepareArticle(articleObj, articleId) {

@@ -19,6 +19,7 @@
             <form-edit-article @article-created="onArticleUpdate"
                                :preload-article-id="editedArticleId">
             </form-edit-article>
+            
         </div>
     
     </section>
