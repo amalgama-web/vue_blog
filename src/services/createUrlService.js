@@ -23,12 +23,26 @@ export default {
             `&limitToLast=${numbersOfArticles}`;
     },
 
-    listOfArchivedlArticles() {
+    listOfUserArticles(userId) {
         return DB_URL +
             `/articles.json` +
-            `?orderBy="timeCreated"` +
-            `&endAt=0`;
+            `?orderBy="creatorId"` +
+            `&equalTo="${userId}"`;
     },
+
+    // listOfArchivedlArticles() {
+    //     return DB_URL +
+    //         `/articles.json` +
+    //         `?orderBy="timeCreated"` +
+    //         `&endAt=0`;
+    // },
+
+    // listOfUserFavoritesArticles(favoriteId) {
+    //     return DB_URL +
+    //         `/articles.json` +
+    //         `?orderBy="$key"` +
+    //         `&equalTo="${favoriteId}"`;
+    // },
 
     article(articleId, token = '') {
         return DB_URL +
@@ -65,6 +79,15 @@ export default {
             `/${commentId}.json` +
             `?auth=${token}`;
     },
+
+    favoritesList(userId, token) {
+        return DB_URL +
+            `/usersFavorites` +
+            `/${userId}.json` +
+            `?auth=${token}`;
+    },
+
+
 
 
 

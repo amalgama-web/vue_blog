@@ -63,6 +63,7 @@
         },
 
         methods: {
+            // todo внести внутрь компонента
             openArticle(articleId) {
                 this.$router.push({ name: 'TheArticle', params: { id: articleId } });
             },

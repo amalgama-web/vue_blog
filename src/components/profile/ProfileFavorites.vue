@@ -1,0 +1,100 @@
+<template>
+    <div v-if="isDataLoading" class="preloader-wrap">
+        <div class="preloader" ></div>
+    </div>
+    
+    <div v-else-if="isError">
+        Произошла ошибка загрузки статей
+    </div>
+    
+    <ul class="article-items" v-else-if="articlesList.length">
+    
+        <article-item v-for="article in articlesList"
+                      :article="article"
+                      :key="article.id"
+        ></article-item>
+    </ul>
+    
+    <div v-else>
+        Вы не добавили в избранное ни одной статьи
+    </div>
+</template>
+
+<script>
+    import articleService from "../../services/articleService";
+    import createUrlService from "../../services/createUrlService";
+    import ArticleItem from "../ArticleItem";
+
+    export default {
+        components: {
+            ArticleItem
+        },
+        
+        inject: ['showNotification'],
+        
+        data() {
+            return {
+                isDataLoading: false,
+                isError: false,
+                
+                articlesList: []
+            }
+        },
+        
+        computed: {
+            favoritesCount() {
+                return this.$store.getters.favoritesCount;
+            }
+        },
+
+        methods: {
+            async loadFavoritesArticles() {
+
+                this.isDataLoading = true;
+
+                const promises = this.$store.state.favorites.map(favoriteId => fetch(createUrlService.article(favoriteId)));
+                
+                Promise.all(promises)
+                    .then(response => {
+                        if( response.some(respItem => respItem.ok === false) ) {
+                            console.log('Ошибка загрузки избранных статей');
+                            throw new Error('Ошибка загрузки избранных статей');
+                        }
+                        return Promise.all(response.map(respItem => respItem.json()));
+                    })
+                    .then(responseData => {
+                        this.articlesList = articleService.prepareUserFavoritesList(responseData, this.$store.state.favorites);
+                    })
+                    .catch(err => {
+                        this.showNotification(err.message, 'error');
+                        this.isError = true;
+                    })
+                    .finally(() => {
+                        this.isDataLoading = false;
+                    })
+            }
+        },
+        
+        watch: {
+            favoritesCount(newVal, oldVal) {
+                console.log('oldVal');
+                console.log(oldVal);
+                console.log('newVal');
+                console.log(newVal);
+                if(oldVal !== 0) return;
+                this.loadFavoritesArticles();
+
+            }
+        },
+        
+        created() {
+            if(this.favoritesCount) {
+                this.loadFavoritesArticles()
+            }
+        }
+    }
+</script>
+
+<style lang="less">
+</style>
+

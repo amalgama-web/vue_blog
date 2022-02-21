@@ -1,7 +1,8 @@
 <template>
     <li class="article-item"
         :class="{'_element-processing': article.isInProcessing}"
-        @click="$emit('open-article', article.id)">
+        @click="openArticle(article.id)"
+    >
         
         <div class="article-item__name">{{article.name}}</div>
         <div class="article-item__text">{{article.shortText}}</div>
@@ -76,6 +77,10 @@
             },
         },
         methods: {
+            openArticle(articleId) {
+                this.$router.push({ name: 'TheArticle', params: { id: articleId } });
+            },
+            
             toggleFavorite(articleId) {
                 this.$store.dispatch('toggleArticleInFavorites', articleId);
             },

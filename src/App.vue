@@ -10,33 +10,20 @@
         <div class="preloader"></div>
     </div>
     
-    <header class="header">
-        <div class="header__inner">
-            <button class="button" @click="getUserInfo()">Click</button>
-            <div>
-                Избранное {{ favoritesCount }}
-            </div>
-            <div v-if="$store.getters.isAuth" class="user-plate">
-                <span class="user-plate__icon">{{ $store.getters.userInitials }}</span>
-                <span class="user-plate__name">{{ $store.getters.userFullName }} (<a href="#" @click.prevent="logout()">выйти</a>)</span>
-            </div>
-            <router-link v-else to="/auth" class="button">
-                Вход / Регистрация
-            </router-link>
-        </div>
-    </header>
+    <the-header></the-header>
     
     <router-view></router-view>
 
 </template>
 
 <script>
-    import createUrlService from './services/createUrlService';
     import BaseNotification from './components/BaseNotification';
+    import TheHeader from './components/TheHeader';
 
     export default {
         components: {
-            BaseNotification
+            BaseNotification,
+            TheHeader
         },
         provide() {
             return {
@@ -56,9 +43,7 @@
             }
         },
         computed: {
-            favoritesCount() {
-                return this.$store.getters.favoritesCount;
-            }
+        
         },
         methods: {
             showPageloader() {
@@ -79,27 +64,7 @@
                 this.notificationVisible = false;
             },
             
-            logout() {
-                this.$store.dispatch('logout');
-            },
             
-            getUserInfo() {
-                
-                const url = createUrlService.userInfo;
-                fetch(url,{
-                    method: 'POST',
-                    body: JSON.stringify({
-                        idToken: this.$store.getters.token
-                    })
-                })
-                    .then(response => {
-
-                        return response.json();
-
-                    }).then(responseData => {
-                        console.log(responseData);
-                    });
-            },
         },
         
         created() {
@@ -332,9 +297,15 @@
         display: block;
         width: 60px;
         height: 15px;
-        margin: 30px auto;
         background: url('~@/assets/preloader.svg') no-repeat center bottom;
         background-size: contain;
+        &._sm {
+            width: 30px;
+            height: 10px;
+        }
+        &._inline {
+            display: inline-block;
+        }
     }
     
     .page-preloader {
@@ -349,7 +320,6 @@
         width: 100vw;
         height: 100vh;
         background-color: fade(#fff, 50%);
-        
     }
 
     ._element-processing {

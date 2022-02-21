@@ -23,7 +23,7 @@
         >
             <input v-model="isArchived" type="checkbox" id="isArchived">
             <label for="isArchived">Поместить в архив</label>
-            <p class="form-edit-article__info-text">Статья будет перемещана в архив и не будет выводиться в списке на главной странице, вы можете найти статью в профиле, в разделе архив статей и вновь опубликовать ее.</p>
+            <p class="form-edit-article__info-text">Статья будет перемещена в архив и не будет выводиться в списке на главной странице, вы можете найти статью в профиле, в разделе архив статей и вновь опубликовать ее.</p>
         </div>
     
         <div class="form-edit-article__group">
