@@ -18,7 +18,6 @@
                 
                 <article-item v-for="article in articlesList"
                                     :article="article"
-                                    @open-article="openArticle"
                                     @remove-article="removeArticle"
                                     :key="article.id"></article-item>
                 
@@ -63,11 +62,6 @@
         },
 
         methods: {
-            // todo внести внутрь компонента
-            openArticle(articleId) {
-                this.$router.push({ name: 'TheArticle', params: { id: articleId } });
-            },
-
             removeArticle(articleId) {
                 const indexForRemove = this.articlesList.findIndex(item => item.id === articleId );
                 const url = createUrlService.article(articleId, this.$store.getters.token);
@@ -79,15 +73,9 @@
                 fetch(url, {
                         method: 'DELETE'
                     })
-                    .then(response => {
-                        return response.json();
-                    })
-                    .then(responseData => {
-                        console.log(responseData);
-                    })
-                    .finally(() => {
+                    .then(() => {
                         this.articlesList.splice(indexForRemove, 1);
-                    });
+                    })
             },
             
             createLoadingObserver() {

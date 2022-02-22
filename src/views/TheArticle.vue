@@ -157,7 +157,6 @@
                         isDeleted: true
                     })
                 });
-                console.log(response);
                 
                 if(response.ok) {
                     this.removeCommentLocally(commentId);
@@ -249,7 +248,6 @@
                 await this.loadArticle();
                 await this.loadComments();
             } catch (err) {
-                console.log(err.message);
                 this.showNotification(err.message, 'error');
             }
         }

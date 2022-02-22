@@ -65,8 +65,6 @@
                     }
                     
                     this.articlesList = articleService.prepareUserArticlesList(responseData);
-                    console.log(responseData);
-                    console.log(this.articlesList);
 
 
                 } catch (err) {

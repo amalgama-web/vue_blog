@@ -86,7 +86,7 @@
             },
             
             isInFavorites(articleId) {
-                return this.$store.state.favorites.some(favoriteId => favoriteId === articleId);
+                return this.$store.getters.favoritesList.some(favoriteId => favoriteId === articleId);
             }
         }
     }

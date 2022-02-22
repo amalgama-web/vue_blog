@@ -77,7 +77,6 @@
                     }
                     
                     const userData = responseData.users[0];
-                    console.log(userData);
 
                     this.createdAt = textService.getFormattedTime(+userData.createdAt);
                     this.displayName = userData.displayName;

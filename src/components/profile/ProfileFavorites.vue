@@ -52,18 +52,17 @@
 
                 this.isDataLoading = true;
 
-                const promises = this.$store.state.favorites.map(favoriteId => fetch(createUrlService.article(favoriteId)));
+                const promises = this.$store.getters.favoritesList.map(favoriteId => fetch(createUrlService.article(favoriteId)));
                 
                 Promise.all(promises)
                     .then(response => {
                         if( response.some(respItem => respItem.ok === false) ) {
-                            console.log('Ошибка загрузки избранных статей');
                             throw new Error('Ошибка загрузки избранных статей');
                         }
                         return Promise.all(response.map(respItem => respItem.json()));
                     })
                     .then(responseData => {
-                        this.articlesList = articleService.prepareUserFavoritesList(responseData, this.$store.state.favorites);
+                        this.articlesList = articleService.prepareUserFavoritesList(responseData, this.$store.getters.favoritesList);
                     })
                     .catch(err => {
                         this.showNotification(err.message, 'error');
@@ -77,10 +76,6 @@
         
         watch: {
             favoritesCount(newVal, oldVal) {
-                console.log('oldVal');
-                console.log(oldVal);
-                console.log('newVal');
-                console.log(newVal);
                 if(oldVal !== 0) return;
                 this.loadFavoritesArticles();
 
