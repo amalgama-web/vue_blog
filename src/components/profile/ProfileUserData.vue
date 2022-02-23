@@ -1,30 +1,33 @@
 <template>
-    
-    <div v-if="isDataLoading" class="preloader-wrap">
-        <div class="preloader" ></div>
-    </div>
-    
-    <div v-else-if="isError">
-        Произошла ошибка загрузки данных пользователя
-    </div>
-    
-    <div v-else>
-        <dl class="params-table">
-            <dt><span class="params-table__text">Полное имя:</span></dt>
-            <dd><span class="params-table__text">{{displayName}}</span></dd>
-    
-            <dt><span class="params-table__text">E-mail:</span></dt>
-            <dd><span class="params-table__text">{{email}}</span></dd>
+    <div>
+        <transition name="tabs" mode="out-in">
+            <div v-if="isDataLoading" class="preloader-wrap">
+                <div class="preloader" ></div>
+            </div>
             
-            <dt><span class="params-table__text">E-mail верифицирован:</span></dt>
-            <dd><span class="params-table__text">{{emailVerified ? 'Да' : 'Нет'}}</span></dd>
+            <div v-else-if="isError">
+                Произошла ошибка загрузки данных пользователя
+            </div>
             
-            <dt><span class="params-table__text">Аккаунт создан:</span></dt>
-            <dd><span class="params-table__text">{{createdAt}}</span></dd>
+            <div v-else>
+                <dl class="params-table">
+                    <dt><span class="params-table__text">Полное имя:</span></dt>
+                    <dd><span class="params-table__text">{{displayName}}</span></dd>
             
-            <dt><span class="params-table__text">Последний вход:</span></dt>
-            <dd><span class="params-table__text">{{lastLoginAt}}</span></dd>
-        </dl>
+                    <dt><span class="params-table__text">E-mail:</span></dt>
+                    <dd><span class="params-table__text">{{email}}</span></dd>
+                    
+                    <dt><span class="params-table__text">E-mail верифицирован:</span></dt>
+                    <dd><span class="params-table__text">{{emailVerified ? 'Да' : 'Нет'}}</span></dd>
+                    
+                    <dt><span class="params-table__text">Аккаунт создан:</span></dt>
+                    <dd><span class="params-table__text">{{createdAt}}</span></dd>
+                    
+                    <dt><span class="params-table__text">Последний вход:</span></dt>
+                    <dd><span class="params-table__text">{{lastLoginAt}}</span></dd>
+                </dl>
+            </div>
+        </transition>
     </div>
 </template>
 

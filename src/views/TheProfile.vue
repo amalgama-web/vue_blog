@@ -25,8 +25,11 @@
             </li>
         </ul>
     
-        <router-view></router-view>
-    
+        <router-view v-slot="{ Component }">
+            <transition name="child-route" mode="out-in">
+                <component :is="Component" />
+            </transition>
+        </router-view>
     </div>
 </template>
 
@@ -75,6 +78,45 @@
                 cursor: default;
             }
         }
+    }
+
+    @duration: 200ms;
+    .child-route-enter-from {
+    }
+    .child-route-enter-to {
+    }
+    .child-route-enter-active {
+        transition: all @duration linear;
+    }
+
+    .child-route-leave-from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .child-route-leave-to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    .child-route-leave-active {
+        transition: all @duration linear;
+    }
+
+    .tabs-enter-from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    .tabs-enter-to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    .tabs-enter-active {
+        transition: all @duration linear;
+    }
+    .tabs-leave-from {
+    }
+    .tabs-leave-to {
+    }
+    .tabs-leave-active {
     }
 </style>
 

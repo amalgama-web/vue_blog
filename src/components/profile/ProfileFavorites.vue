@@ -1,22 +1,26 @@
 <template>
-    <div v-if="isDataLoading" class="preloader-wrap">
-        <div class="preloader" ></div>
-    </div>
-    
-    <div v-else-if="isError">
-        Произошла ошибка загрузки статей
-    </div>
-    
-    <ul class="article-items" v-else-if="articlesList.length">
-    
-        <article-item v-for="article in articlesList"
-                      :article="article"
-                      :key="article.id"
-        ></article-item>
-    </ul>
-    
-    <div v-else>
-        Вы не добавили в избранное ни одной статьи
+    <div>
+        <transition name="tabs" mode="out-in">
+            <div v-if="isDataLoading" class="preloader-wrap">
+                <div class="preloader" ></div>
+            </div>
+            
+            <div v-else-if="isError">
+                Произошла ошибка загрузки статей
+            </div>
+            
+            <ul class="article-items" v-else-if="articlesList.length">
+            
+                <article-item v-for="article in articlesList"
+                              :article="article"
+                              :key="article.id"
+                ></article-item>
+            </ul>
+            
+            <div v-else>
+                Вы не добавили в избранное ни одной статьи
+            </div>
+        </transition>
     </div>
 </template>
 

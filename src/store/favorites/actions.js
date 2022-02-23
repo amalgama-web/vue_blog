@@ -33,7 +33,16 @@ export default {
 
     async toggleArticleInFavorites(context, articleId) {
 
-        if ( context.state.favorites.some(id => id === articleId) ) {
+        if(!context.getters.isAuth) {
+            context.dispatch('notify/show', {
+                type: 'warning',
+                text: 'Требуется авторизация',
+                hideAfter: 1000
+            });
+            return;
+        }
+
+        if ( context.getters.favoritesList.some(id => id === articleId) ) {
             context.commit('removeFromFavorites', articleId);
         } else {
             context.commit('addToFavorites', articleId);
@@ -45,7 +54,7 @@ export default {
 
             const response = await fetch(url, {
                 method: 'PUT',
-                body: JSON.stringify(context.state.favorites)
+                body: JSON.stringify(context.getters.favoritesList)
             });
 
             if(!response.ok) {

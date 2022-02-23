@@ -1,22 +1,27 @@
 <template>
-    <div v-if="isDataLoading" class="preloader-wrap">
-        <div class="preloader" ></div>
-    </div>
-    
-    <div v-else-if="isError">
-        Произошла ошибка загрузки статей
-    </div>
-    
-    <ul class="article-items" v-else-if="articlesList.length">
-        
-        <article-item v-for="article in articlesList"
-                      :article="article"
-                      :key="article.id"
-        ></article-item>
-    </ul>
-    
-    <div v-else>
-        Архив статей пуст
+    <div>
+        <transition name="tabs" mode="out-in">
+            <div v-if="isDataLoading" class="preloader-wrap">
+                <div class="preloader" ></div>
+            </div>
+            
+            <div v-else-if="isError">
+                Произошла ошибка загрузки статей
+            </div>
+            
+            
+            <ul v-else-if="articlesList.length" class="article-items">
+                <article-item v-for="article in articlesList"
+                              :article="article"
+                              :key="article.id"
+                ></article-item>
+            </ul>
+            
+            <div v-else>
+                Архив статей пуст
+            </div>
+            
+        </transition>
     </div>
 </template>
 
@@ -85,5 +90,6 @@
 </script>
 
 <style lang="less">
+
 </style>
 

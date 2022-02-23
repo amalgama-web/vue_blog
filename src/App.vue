@@ -12,7 +12,12 @@
     
     <the-header></the-header>
     
-    <router-view></router-view>
+    
+    <router-view v-slot="{ Component }">
+        <transition name="route">
+            <component :is="Component" />
+        </transition>
+    </router-view>
 
 </template>
 
@@ -348,5 +353,21 @@
             background-size: contain;
         }
     }
+    
+    .route-enter-from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    .route-enter-to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .route-enter-active {
+        transition: all 100ms linear;
+    }
+    
+    .route-leave-from {}
+    .route-leave-to {}
+    .route-leave-active {}
 
 </style>

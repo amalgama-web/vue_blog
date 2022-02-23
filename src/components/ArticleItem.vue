@@ -16,8 +16,9 @@
             </div>
         </div>
     
+<!--        v-if="isAuth"-->
         <div class="article-item__row"
-             v-if="isAuth"
+        
         >
         
             <div class="button _orange _sm"

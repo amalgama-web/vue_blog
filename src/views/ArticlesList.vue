@@ -4,7 +4,7 @@
         <div class="article-list" v-cloak>
             
             <div class="opposite-header">
-                <div class="article-list__head">Список статей</div>
+                <div class="article-list__head">Добро пожаловать</div>
                 <router-link to="/create" class="button">
                     Добавить статью
                 </router-link>
@@ -14,20 +14,23 @@
                 <div class="preloader" ></div>
             </div>
             
-            <ul class="article-items" v-else-if="articlesList.length">
+            <div v-else-if="articlesList.length">
+                <transition-group tag="ul" name="list" class="article-items">
+                    <article-item v-for="article in articlesList"
+                                  :article="article"
+                                  @remove-article="removeArticle"
+                                  :key="article.id"
+                    ></article-item>
+                </transition-group>
                 
-                <article-item v-for="article in articlesList"
-                                    :article="article"
-                                    @remove-article="removeArticle"
-                                    :key="article.id"></article-item>
-                
-                <li ref="additionalLoadingMarker"></li>
-                <li class="article-items__info" v-if="isAllArticlesLoaded">Все статьи загружены</li>
-                <li class="article-items__preloader" v-show="isAdditionalLoadingActive">
+                <div ref="additionalLoadingMarker"></div>
+                <div class="article-items__info" v-if="isAllArticlesLoaded">Все статьи загружены</div>
+                <div class="article-items__preloader" v-show="isAdditionalLoadingActive">
                     <div class="preloader"></div>
-                </li>
+                </div>
                 
-            </ul>
+            </div>
+            
             
             <article-list-empty v-else></article-list-empty>
             
@@ -185,4 +188,18 @@
             height: 50px;
         }
     }
+
+    .list-enter-from {
+        background-color: darken(#f5f5f5, 10%);
+    }
+    .list-enter-to {
+        background-color: #f5f5f5;
+    }
+    .list-enter-active {
+        transition: all 1500ms ease-in;
+    }
+
+    .list-leave-from {}
+    .list-leave-to {}
+    .list-leave-active {}
 </style>
