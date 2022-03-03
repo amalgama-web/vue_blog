@@ -1,5 +1,5 @@
 <template>
-    <section class="l-container">
+    <section class="l-container _v-padding">
         
         <div class="article-list" v-cloak>
             

@@ -1,34 +1,42 @@
 <template>
-    
-    <base-notification :text="notificationMessage"
-                       :type="notificationType"
-                       :is-visible="notificationVisible"
-                       @hide-notification="hideNotification"
-    ></base-notification>
-    
-    <div class="page-preloader" v-if="isPageloaderVisible">
-        <div class="preloader"></div>
+    <div class="wrapper">
+        
+        <base-notification :text="notificationMessage"
+                           :type="notificationType"
+                           :is-visible="notificationVisible"
+                           @hide-notification="hideNotification"
+        ></base-notification>
+        
+        <div class="page-preloader" v-if="isPageloaderVisible">
+            <div class="preloader"></div>
+        </div>
+        
+        <the-header></the-header>
+        
+        
+        <router-view v-slot="{ Component }">
+            <transition name="route">
+                <component :is="Component" />
+            </transition>
+        </router-view>
+        
+        <div class="l-prefooter"></div>
     </div>
     
-    <the-header></the-header>
-    
-    
-    <router-view v-slot="{ Component }">
-        <transition name="route">
-            <component :is="Component" />
-        </transition>
-    </router-view>
+    <the-footer></the-footer>
 
 </template>
 
 <script>
     import BaseNotification from './components/BaseNotification';
     import TheHeader from './components/TheHeader';
+    import TheFooter from './components/TheFooter';
 
     export default {
         components: {
             BaseNotification,
-            TheHeader
+            TheHeader,
+            TheFooter
         },
         provide() {
             return {
@@ -105,6 +113,25 @@
         }
     }
     
+    html, body, .app-container {
+        height: 100%;
+    }
+    
+    .wrapper {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+    }
+    @footerHeight: 50px;
+    .l-prefooter {
+        padding-bottom: @footerHeight;
+        margin-top: 50px;
+    }
+    .l-footer {
+        margin-top: -@footerHeight;
+        height: @footerHeight;
+    }
+
     body {
         background-color: #fff;
         margin: 0;
@@ -159,54 +186,27 @@
         &:hover {color: darken(cornflowerblue, 10%);}
         &:active {color: cornflowerblue;}
     }
+    .link {
+        display: inline;
+        border: none;
+        background: none;
+        outline: none;
+        color: cornflowerblue;
+        cursor: pointer;
+        font: inherit;
+        &:link {color: cornflowerblue;}
+        &:visited {color: cornflowerblue;}
+        &:hover {color: darken(cornflowerblue, 10%);}
+        &:active {color: cornflowerblue;}
+    }
     
     .l-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 40px 20px;
-    }
-    
-    .header {
-        position: sticky;
-        z-index: 10;
-        top: 0;
-        background-color: #eee;
-        box-shadow: 0 0 20px 0 rgba(0,0,0,.3);
-        &__inner {
-            display: flex;
-            justify-content: space-between;
-            
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        &__title {
-            text-align: center;
-            font-size: 25px;
-        }
-        &__user-info {
-            display: inline-flex;
-            align-items: center;
-        }
-        
-    }
-    .user-plate {
-        &__icon {
-            display: inline-block;
-            @square: 40px;
-            height: @square;
-            width: @square;
-            line-height: @square;
-            text-align: center;
-            background-color: #2d2d2d;
-            color: #cccccc;
-            font-size: 20px;
-            text-transform: uppercase;
-        
-            border-radius: 50%;
-        }
-        &__name {
-        
+        padding: 0 20px;
+        &._v-padding {
+            padding-top: 40px;
+            padding-bottom: 40px;
         }
     }
     
@@ -310,6 +310,33 @@
         }
         &._inline {
             display: inline-block;
+        }
+    }
+    
+    .preloader-overlay {
+        &:before {
+            position: absolute;
+            content: '';
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+    
+            background-color: fade(#fff, 50%);
+        }
+        &:after {
+            position: absolute;
+            z-index: 2;
+            content: '';
+            display: block;
+            width: 60px;
+            height: 15px;
+            left: 50%;
+            top: 50%;
+            margin: -7px 0 0 -30px;
+            background: url('~@/assets/preloader.svg') no-repeat center bottom;
+            background-size: contain;
         }
     }
     

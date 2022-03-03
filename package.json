@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vee-validate/i18n": "^4.5.9",
+    "@vee-validate/rules": "^4.5.9",
     "core-js": "^3.6.5",
     "vee-validate": "^4.5.7",
     "vue": "^3.0.0",

@@ -1,5 +1,5 @@
 <template>
-    <div class="l-container">
+    <div class="l-container _v-padding">
         <router-link to="/" class="button">
             ← К списку статей
         </router-link>

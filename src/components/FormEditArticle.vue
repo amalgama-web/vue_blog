@@ -2,19 +2,19 @@
     <Form class="form-edit-article" @submit="publishArticle" :class="{'_element-processing': isFormInProcess}">
         <div class="form-edit-article__group">
             <div class="field-label">Заголовок статьи:</div>
-            <Field v-model="name" name="name" type="text" placeholder="Заголовок вашей статьи" :rules="isRequired"/>
+            <Field v-model="name" name="name" type="text" placeholder="Заголовок вашей статьи" rules="required|min: 20"/>
             <ErrorMessage class="error-message form-edit-article__error" name="name"></ErrorMessage>
         </div>
     
         <div class="form-edit-article__group">
             <div class="field-label">Текст превью:</div>
-            <Field v-model="shortText" name="shortText" as="textarea" placeholder="Превью" :rules="isRequired"/>
+            <Field v-model="shortText" name="shortText" as="textarea" placeholder="Превью" rules="required"/>
             <ErrorMessage class="error-message form-edit-article__error" name="shortText"></ErrorMessage>
         </div>
     
         <div class="form-edit-article__group">
             <div class="field-label">Полный текст:</div>
-            <Field v-model="fullText" name="fullText" as="textarea" placeholder="Полный текст вашей статьи" :rules="isRequired"/>
+            <Field v-model="fullText" name="fullText" as="textarea" placeholder="Полный текст вашей статьи" rules="required"/>
             <ErrorMessage class="error-message form-edit-article__error" name="fullText"></ErrorMessage>
         </div>
     
@@ -92,12 +92,12 @@
                 
             },
             
-            isRequired(value) {
-                if (!value.trim()) {
-                    return 'Это поле обязательно';
-                }
-                return true;
-            },
+            // isRequired(value) {
+            //     if (!value.trim()) {
+            //         return 'Это поле обязательно';
+            //     }
+            //     return true;
+            // },
             
             createArticle(formActions) {
                 const url = createUrlService.articles(this.$store.getters.token);

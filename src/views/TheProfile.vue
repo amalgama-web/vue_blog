@@ -1,5 +1,5 @@
 <template>
-    <div class="l-container">
+    <div class="l-container _v-padding">
         <h1>Профиль</h1>
         
         <ul class="tabs">
