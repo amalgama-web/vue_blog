@@ -35,7 +35,7 @@ export default {
 
             context.dispatch('notify/show', {
                 text: 'Вы успешно зарегистрированы',
-                hideAfter: 3000
+                hideAfter: 1500
             });
 
             return true;
@@ -83,7 +83,7 @@ export default {
 
             context.dispatch('notify/show', {
                 text: 'Вы успешно авторизированы',
-                hideAfter: 3000
+                hideAfter: 1500
             });
 
             return true;

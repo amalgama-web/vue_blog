@@ -4,31 +4,66 @@
             ← К списку статей
         </router-link>
     
-        <Form class="auth-form"
+        <Form v-if="isSignup"
+              class="auth-form"
               :class="{'preloader-overlay': isInProcessing}"
-              v-if="isSignup"
-              @submit="submit"
+              @submit="signUp"
         >
             <h2 class="auth-form__header">Регистрация</h2>
         
             <div class="auth-form__group">
-                <Field v-model="name" name="name" type="text" placeholder="Имя" rules="required"/>
+                <Field v-model="name"
+                       name="name"
+                       label="Имя"
+                       type="text"
+                       placeholder="Имя"
+                       rules="required"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="name"></ErrorMessage>
             </div>
     
             <div class="auth-form__group">
-                <Field v-model="secondName" name="secondName" type="text" placeholder="Фамилия" rules="required"/>
+                <Field v-model="secondName"
+                       name="secondName"
+                       label="Фамилия"
+                       type="text"
+                       placeholder="Фамилия"
+                       rules="required"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="secondName"></ErrorMessage>
             </div>
     
             <div class="auth-form__group">
-                <Field v-model="email" name="email" type="text" placeholder="E-mail" rules="required|email"/>
+                <Field v-model="email"
+                       name="email"
+                       label="E-mail"
+                       type="text"
+                       placeholder="E-mail"
+                       rules="required|email"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="email"></ErrorMessage>
             </div>
     
             <div class="auth-form__group">
-                <Field v-model="password" name="password" type="password" placeholder="Пароль" rules="required|min:6"/>
+                <Field v-model="password"
+                       name="password"
+                       label="Пароль"
+                       type="password"
+                       placeholder="Пароль"
+                       rules="required|min:6"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="password"></ErrorMessage>
+            </div>
+    
+            <div class="auth-form__group">
+                <Field v-model="confirmpassword"
+                       name="confirmpassword"
+                       label="Подтверждение пароля"
+                       type="password"
+                       placeholder="Подтвердите пароль"
+                       rules="required|min:6|confirmed:@password"
+                />
+                <ErrorMessage class="error-message auth-form__error" name="confirmpassword"></ErrorMessage>
             </div>
     
             <button class="button">Зарегистрироваться</button>
@@ -42,17 +77,29 @@
         <Form v-else
               class="auth-form"
               :class="{'preloader-overlay': isInProcessing}"
-              @submit="submit"
+              @submit="signIn"
         >
             <h2 class="auth-form__header">Вход</h2>
     
             <div class="auth-form__group">
-                <Field v-model="email" name="email" type="text" placeholder="E-mail" rules="required|email"/>
+                <Field v-model="email"
+                       name="email"
+                       label="E-mail"
+                       type="text"
+                       placeholder="E-mail"
+                       rules="required|email"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="email"></ErrorMessage>
             </div>
     
             <div class="auth-form__group">
-                <Field v-model="password" name="password" type="password" placeholder="Пароль" rules="required|min:6"/>
+                <Field v-model="password"
+                       name="password"
+                       label="Пароль"
+                       type="password"
+                       placeholder="Пароль"
+                       rules="required|min:6"
+                />
                 <ErrorMessage class="error-message auth-form__error" name="password"></ErrorMessage>
             </div>
             
@@ -85,7 +132,8 @@
                 name: null,
                 secondName: null,
                 email: null,
-                password: null
+                password: null,
+                confirmpassword: null
             }
         },
         
@@ -96,10 +144,6 @@
         },
 
         methods: {
-            submit() {
-                this.isSignup ? this.signUp() : this.signIn();
-            },
-            
             setMode(mode) {
                 this.mode = mode;
             },
