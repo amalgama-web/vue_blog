@@ -11,7 +11,7 @@
                 <router-link class="button" :to="{ name: 'TheArticle', params: { id: newArticleId } }">
                     Просмотреть статью
                 </router-link>
-                <div class="button" @click="createAnother">Создать еще одну статью</div>
+                <button class="button" @click="createAnother">Создать еще одну статью</button>
             </div>
         </div>
         

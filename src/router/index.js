@@ -4,7 +4,8 @@ import TheArticle from '../views/TheArticle';
 import CreateArticle from '../views/CreateArticle';
 import ArticlesList from '../views/ArticlesList';
 import EditArticle from '../views/EditArticle';
-import AuthPage from '../views/AuthPage';
+import Authentication from '../views/TheAuthentication';
+import Registration from '../views/TheRegistration';
 
 import TheProfile from '../views/TheProfile';
 import ProfileArticles from '../components/profile/ProfileArticles';
@@ -19,12 +20,14 @@ const router = createRouter({
     { path: '/article/:id', component: TheArticle, name: 'TheArticle' },
     { path: '/create', component: CreateArticle, name: 'CreateArticle' },
     { path: '/edit/:id', component: EditArticle, name: 'EditArticle' },
-    { path: '/auth', component: AuthPage, name: 'Auth' },
+    { path: '/authentication', component: Authentication, name: 'Authentication' },
+    { path: '/registration', component: Registration, name: 'Registration' },
 
     {
       path: '/profile',
       component: TheProfile,
       name: 'Profile',
+      redirect: '/profile/user',
       children: [
         { path: '/profile/user', component: ProfileUserData, name: 'ProfileUserData' },
         { path: '/profile/favorites', component: ProfileFavorites, name: 'ProfileFavorites' },

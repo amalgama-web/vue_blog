@@ -1,5 +1,5 @@
 <template>
-    <Form class="comment-form" @submit="createComment" :class="{'_element-processing': isFormInProcess}">
+    <Form class="comment-form" @submit="createComment" :class="{'preloader-overlay': isFormInProcess}">
     
         <div class="comment-form__group">
             <div class="field-label">Ваш комментарий:</div>
@@ -8,7 +8,7 @@
         </div>
         
         <button class="comment-form__button button">Опубликовать комментарий</button>
-        <div class="comment-form__button button _green" @click="autofill">Заполнить текстом</div>
+        <button type="button" class="comment-form__button button _green" @click="autofill">Заполнить текстом</button>
         
     </Form>
 </template>

@@ -67,7 +67,7 @@
                         throw new Error('Ошибка загрузки данных');
                     }
                     
-                    this.articlesList = articleService.prepareUserArticlesList(responseData);
+                    this.articlesList = articleService.createUserArticlesList(responseData);
 
 
                 } catch (err) {

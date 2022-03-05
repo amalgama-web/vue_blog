@@ -10,16 +10,16 @@ export default {
         return counter;
     },
 
-    prepareCommentsFlatList(commentsObj) {
+    createCommentsFlatList(commentsObj) {
         const commentsFlatList = [];
 
-        for(let id in commentsObj) {
+        Object.keys(commentsObj).forEach((id) => {
             commentsFlatList.push({
                 id: id,
                 commentsList: [],
                 ...commentsObj[id],
             });
-        }
+        });
 
         return commentsFlatList.sort((item1, item2) => item1.timeCreated - item2.timeCreated );
     },

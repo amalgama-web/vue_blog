@@ -10,7 +10,7 @@
                 </router-link>
             </div>
             
-            <div class="preloader-wrap" v-if="!isInitialDataLoaded">
+            <div class="preloader-wrap" v-if="!isInitialArticlesLoaded">
                 <div class="preloader" ></div>
             </div>
             
@@ -51,7 +51,7 @@
         },
         data() {
             return {
-                isInitialDataLoaded: false,
+                isInitialArticlesLoaded: false,
                 isAdditionalLoadingActive: false,
                 isAllArticlesLoaded: false,
                 articlesList: [],
@@ -120,7 +120,7 @@
                             return;
                         }
                         
-                        const additionalList = articleService.prepareArticlesList(responseData);
+                        const additionalList = articleService.createArticlesListFromObj(responseData);
                         
                         this.articlesList.push( ... additionalList);
                         
@@ -145,16 +145,16 @@
                     .then(responseData => {
                         if (responseData === null) return;
 
-                        this.articlesList = articleService.prepareArticlesList(responseData);
+                        this.articlesList = articleService.createArticlesListFromObj(responseData);
                         this.lastArticleCreatedTime = this.articlesList[this.articlesList.length - 1].timeCreated;
-                        this.isInitialDataLoaded = true;
+                        this.isInitialArticlesLoaded = true;
 
                         this.$nextTick( () => {
                             this.createLoadingObserver();
                         });
                     })
                     .finally(() => {
-                        this.isInitialDataLoaded = true;
+                        this.isInitialArticlesLoaded = true;
                     });
             }
         },

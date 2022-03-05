@@ -1,27 +1,26 @@
 <template>
     <li class="article-item"
-        :class="{'_element-processing': article.isInProcessing}"
+        :class="{'preloader-overlay': article.isInProcessing, '_archived': article.isArchived}"
         @click="openArticle(article.id)"
     >
-        
         <div class="article-item__name">{{article.name}}</div>
         <div class="article-item__text">{{article.shortText}}</div>
         
         <div class="article-item__row">
-            <div>
+            
+            <div v-if="article.isArchived" class="article-item__archive-caption">В архиве</div>
+            
+            <p>
                 Автор: <strong>{{ article.creatorFullName }}</strong>
-            </div>
-            <div>
+            </p>
+            <p>
                 Создано: <strong>{{ timeCreated }}</strong>
-            </div>
+            </p>
         </div>
     
-<!--        v-if="isAuth"-->
-        <div class="article-item__row"
+        <div class="article-item__row">
         
-        >
-        
-            <div class="button _orange _sm"
+            <button class="button _orange _sm"
                  @click.stop="toggleFavorite(article.id)"
             >
                 
@@ -33,7 +32,7 @@
                     <span class="button__icon">❤</span>&nbsp;В избранное
                 </span>
         
-            </div>
+            </button>
         
             <router-link v-if="isCreator"
                          class="button _green _sm"
@@ -42,13 +41,6 @@
             >
                 Редактировать
             </router-link>
-        
-            <div v-if="isCreator"
-                 class="button _red _sm"
-                 @click.stop="$emit('remove-article', article.id)"
-            >
-                Удалить запись
-            </div>
         </div>
     </li>
 </template>
@@ -142,11 +134,21 @@
                 margin-bottom: 0;
             }
             & > * {
-                margin-right: 20px;
+                margin: 0 20px 0 0;
             }
             strong {
                 font-weight: 700;
             }
+        }
+        &__archive-caption {
+            background-color: #ffb997;
+            display: inline-block;
+            padding: 3px 10px 4px;
+            border-radius: 3px;
+        }
+        
+        &._archived {
+            opacity: 0.7;
         }
         
         

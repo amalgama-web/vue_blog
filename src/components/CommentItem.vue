@@ -1,5 +1,5 @@
 <template>
-    <div class="comment-wrap" :class="{'_element-processing': isInProcessing}">
+    <div class="comment-wrap" :class="{'preloader-overlay': isInProcessing}">
         
         <div class="comment-item">
             
@@ -12,10 +12,10 @@
     
             <div v-if="isAuth">
                 
-                <div class="button _sm _green"
+                <button type="button" class="button _sm _green"
                      @click="toggleAnswerForm"
                 >{{ isAnswerFormActive ? 'Отмена' : 'Ответить'}}
-                </div>
+                </button>
                 
                 <div v-if="isCreatorComment"
                      class="button _sm _red"

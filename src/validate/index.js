@@ -2,7 +2,6 @@ import { defineRule, configure } from 'vee-validate';
 import { localize, setLocale } from '@vee-validate/i18n';
 import { required, email, min, max } from '@vee-validate/rules';
 
-
 export default function() {
     defineRule('required', required);
     defineRule('email', email);
@@ -19,7 +18,6 @@ export default function() {
         generateMessage: localize('ru', {
             messages: {
                 required(context) {
-                    console.log(context);
                     return `Поле "${context.field}" обязательно`;
                 },
                 min(context) {

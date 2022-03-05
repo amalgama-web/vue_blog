@@ -24,7 +24,11 @@ export default {
             if (responseData) context.commit('setFavorites', responseData);
 
         } catch (e) {
-            console.log(e.message);
+            context.dispatch('notify/show', {
+                text: e.message,
+                type: 'error',
+                hideAfter: 1500
+            });
         } finally {
             context.dispatch('stopPreloader');
         }

@@ -30,20 +30,6 @@ export default {
             `&equalTo="${userId}"`;
     },
 
-    // listOfArchivedlArticles() {
-    //     return DB_URL +
-    //         `/articles.json` +
-    //         `?orderBy="timeCreated"` +
-    //         `&endAt=0`;
-    // },
-
-    // listOfUserFavoritesArticles(favoriteId) {
-    //     return DB_URL +
-    //         `/articles.json` +
-    //         `?orderBy="$key"` +
-    //         `&equalTo="${favoriteId}"`;
-    // },
-
     article(articleId, token = '') {
         return DB_URL +
             `/articles` +
@@ -86,9 +72,6 @@ export default {
             `/${userId}.json` +
             `?auth=${token}`;
     },
-
-
-
 
 
     signUp: `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,

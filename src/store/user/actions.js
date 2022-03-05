@@ -99,7 +99,6 @@ export default {
     setUserFromStorage(context) {
         const userData = JSON.parse( localStorage.getItem('userData') );
 
-        console.log(userData);
         if (!userData) return;
 
         context.commit('setUser', userData);

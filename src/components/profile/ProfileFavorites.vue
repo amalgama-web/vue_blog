@@ -8,9 +8,10 @@
             <div v-else-if="isError">
                 Произошла ошибка загрузки статей
             </div>
-            
-            <ul class="article-items" v-else-if="articlesList.length">
-            
+    
+            <ul v-else-if="articlesList.length"
+                class="article-items"
+            >
                 <article-item v-for="article in articlesList"
                               :article="article"
                               :key="article.id"
@@ -66,7 +67,7 @@
                         return Promise.all(response.map(respItem => respItem.json()));
                     })
                     .then(responseData => {
-                        this.articlesList = articleService.prepareUserFavoritesList(responseData, this.$store.getters.favoritesList);
+                        this.articlesList = articleService.createUserFavoritesList(responseData, this.$store.getters.favoritesList);
                     })
                     .catch(err => {
                         this.showNotification(err.message, 'error');

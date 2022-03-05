@@ -13,13 +13,12 @@
             {{ article.fullText }}
         </div>
         
-        <div class="article-view__buttons">
+        <div v-if="userIsCreator" class="article-view__buttons">
             <router-link class="button _green"
                          :to="{ name: 'EditArticle', params: { id: article.id } }"
                          @click.stop>
                 Редактировать
             </router-link>
-            <div class="button _red" @click="$emit('remove-article', article.id)">Удалить статью</div>
         </div>
     </div>
 </template>
@@ -29,6 +28,10 @@
     export default {
         props: ['article'],
         computed: {
+            userIsCreator() {
+                return this.$store.getters.isAuth && this.$store.getters.userId === this.article.creatorId;
+            },
+            
             timeCreated() {
                 return new Date(this.article.timeCreated).toLocaleString("ru",{
                     year: '2-digit',
@@ -39,6 +42,7 @@
                     second: 'numeric'
                 });
             },
+            
             timeEdited() {
                 return !this.article.timeEdited ? null : new Date(this.article.timeEdited).toLocaleString("ru", {
                     year: '2-digit',

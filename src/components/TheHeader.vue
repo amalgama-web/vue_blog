@@ -27,10 +27,18 @@
                     </router-link>
                 </div>
     
-                <router-link v-else to="/auth" class="user-plate">
-                    <span class="user-plate__name">Вход / Регистрация</span>
+                <div v-else class="user-plate">
+                    <span class="user-plate__name">
+                        <router-link to="/authentication">
+                           Вход
+                        </router-link>
+                         /
+                        <router-link to="/registration">
+                           Регистрация
+                        </router-link>
+                    </span>
                     <span class="user-plate__icon _noname"></span>
-                </router-link>
+                </div>
             </div>
         </div>
     </header>

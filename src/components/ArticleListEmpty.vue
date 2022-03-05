@@ -1,7 +1,7 @@
 <template>
     <div class="articles-list-empty">
         <p>
-            Вы еще не добавили ни одной статьи
+            Ни одной статьи еще не опубликовано
         </p>
         <router-link to="/create" class="button">
             Добавить статью

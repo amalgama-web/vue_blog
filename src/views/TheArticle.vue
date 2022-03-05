@@ -23,16 +23,32 @@
                            :comments-count="commentsCount"
             ></comment-block>
             
-            <div class="button"
-                 @click="toggleCommentForm"
-                 v-show="!isCommentFormOpen"
-            >Добавить комментарий
+            <div v-if="isAuth">
+                <div class="button"
+                     @click="toggleCommentForm"
+                     v-show="!isCommentFormOpen"
+                >Добавить комментарий
+                </div>
+    
+                <form-new-comment
+                        v-show="isCommentFormOpen"
+                        @comment-created="toggleCommentForm"
+                ></form-new-comment>
             </div>
     
-            <form-new-comment
-                    v-show="isCommentFormOpen"
-                    @comment-created="toggleCommentForm"
-            ></form-new-comment>
+            <p v-else
+               class="information-text"
+            >
+                Оставлять комментарии могут только зарегистрированные пользователи.
+                <router-link to="/authentication">
+                    Войти
+                </router-link>
+                /
+                <router-link to="/registration">
+                    Зарегистрироваться
+                </router-link>
+            </p>
+            
         </div>
         
         <article-not-exist v-else></article-not-exist>
@@ -49,7 +65,8 @@
     import ArticleBlock from '../components/ArticleBlock';
     import CommentBlock from '../components/CommentBlock';
     import ArticleNotExist from '../components/ArticleNotExist';
-    
+    import { mapGetters } from 'vuex';
+
     export default {
         components: {
             ArticleBlock,
@@ -85,7 +102,8 @@
         computed: {
             commentsCount() {
                 return commentsService.countCommentsInTree(this.currentArticle.commentsList);
-            }
+            },
+            ...mapGetters(['isAuth'])
         },
         
         methods: {
@@ -107,20 +125,27 @@
                     parentCommentId: commentData.parentCommentId
                 };
                 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                
-                if(!response.ok) {
-                    this.showNotification('Ошибка загрузки комментария, попробуйте позже...', 'error');
-                    return;
+                try {
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if(!response.ok) {
+                        throw new Error('Ошибка при создании комментария, попробуйте позже...');
+                    }
+                    
+                    const responseData = await response.json();
+                    
+                    this.addCommentLocally(responseData.name, commentData);
+                    
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        type: 'error',
+                        text: e.message
+                    });
                 }
-                
-                
-                const responseData = await response.json();
-
-                this.addCommentLocally(responseData.name, commentData);
 
             },
             
@@ -150,20 +175,28 @@
                 
                 const url = createUrlService.commentEdit(this.currentArticle.id, commentId, this.$store.getters.token);
                 
-                const response = await fetch(url, {
-                    method: 'PATCH',
-                    // body: 'asdf'
-                    body: JSON.stringify({
-                        isDeleted: true
-                    })
-                });
-                
-                if(response.ok) {
-                    this.removeCommentLocally(commentId);
-                } else {
-                    this.showNotification('Ошибка при удалении комментария, попробуйте позже...', 'error');
-                }
+                try {
+                    const response = await fetch(url, {
+                        method: 'PATCH',
+                        // body: 'asdf'
+                        body: JSON.stringify({
+                            isDeleted: true
+                        })
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Ошибка загрузки комментария, попробуйте позже...');
+                    }
                     
+                    this.removeCommentLocally(commentId);
+                    
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        type: 'error',
+                        text: e.message
+                    });
+                }
+                
             },
 
             removeCommentLocally(commentId) {
@@ -203,53 +236,65 @@
 
             async loadArticle() {
                 const url = createUrlService.article(this.$route.params.id);
-                let response = await fetch(url);
+                
+                try {
+                    const response = await fetch(url);
 
-                if(!response.ok) {
-                    this.isArticleLoadingError = true;
+                    if(!response.ok) {
+                        this.isArticleLoadingError = true;
+                        this.isArticleDataLoaded = true;
+                        throw new Error('Ошибка получения данных статьи, попробуйте позже...');
+                    }
+
+                    const responseData  = await response.json();
+
+                    if (!responseData) {
+                        this.isArticleExist = false;
+                        this.isArticleLoadingError = true;
+                        throw new Error('Такой статьи не существует');
+                    }
+
+                    this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
                     this.isArticleDataLoaded = true;
-                    throw new Error('Ошибка получения данных статьи, попробуйте позже...');
+                    
+                    this.loadComments();
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        type: 'error',
+                        text: e.message
+                    });
                 }
-
-                const responseData  = await response.json();
-
-                if (!responseData) {
-                    this.isArticleExist = false;
-                    this.isArticleLoadingError = true;
-                    throw new Error('Такой статьи не существует');
-                }
-
-                this.currentArticle = articleService.prepareArticle(responseData, this.$route.params.id);
-                this.isArticleDataLoaded = true;
+                
             },
             
             async loadComments() {
                 const url = createUrlService.listComments(this.$route.params.id);
-                const response = await fetch(url);
+                
+                try {
+                    const response = await fetch(url);
 
-                if(!response.ok) {
-                    throw new Error('Ошибка загрузки комментариев')
+                    if(!response.ok) {
+                        throw new Error('Ошибка загрузки комментариев')
+                    }
+
+                    const responseData = await response.json();
+
+                    this.currentArticle.commentsFlatList = commentsService.createCommentsFlatList(responseData);
+                    this.currentArticle.commentsList = commentsService.createCommentsTreeList(this.currentArticle.commentsFlatList);
+                    this.isCommentsDataLoaded = true;
+                    
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        type: 'error',
+                        text: e.message
+                    });
                 }
 
-                const responseData = await response.json();
-
-                this.currentArticle.commentsFlatList = commentsService.prepareCommentsFlatList(responseData);
-                this.currentArticle.commentsList = commentsService.createCommentsTreeList(this.currentArticle.commentsFlatList);
-                this.isCommentsDataLoaded = true;
-
             },
-
-            
         },
         
         async created() {
-            
-            try {
-                await this.loadArticle();
-                await this.loadComments();
-            } catch (err) {
-                this.showNotification(err.message, 'error');
-            }
+            this.loadArticle();
         }
     }
 </script>

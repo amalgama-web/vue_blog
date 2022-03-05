@@ -199,6 +199,10 @@
         &:hover {color: darken(cornflowerblue, 10%);}
         &:active {color: cornflowerblue;}
     }
+    .information-text {
+        color: #999999;
+        font-style: italic;
+    }
     
     .l-container {
         max-width: 1200px;
@@ -354,33 +358,6 @@
         background-color: fade(#fff, 50%);
     }
 
-    ._element-processing {
-        &:before {
-            position: absolute;
-            z-index: 1;
-            content: '';
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: fade(#fff, 50%);
-        }
-    
-        &:after {
-            position: absolute;
-            z-index: 2;
-            content: '';
-            display: block;
-            width: 60px;
-            height: 15px;
-            left: 50%;
-            top: 50%;
-            margin: -7px 0 0 -30px;
-            background: url('~@/assets/preloader.svg') no-repeat center bottom;
-            background-size: contain;
-        }
-    }
-    
     .route-enter-from {
         opacity: 0;
         transform: translateY(20px);
