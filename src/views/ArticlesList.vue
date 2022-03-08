@@ -18,19 +18,19 @@
                 <transition-group tag="ul" name="list" class="article-items">
                     <article-item v-for="article in articlesList"
                                   :article="article"
-                                  @remove-article="removeArticle"
                                   :key="article.id"
                     ></article-item>
                 </transition-group>
                 
                 <div ref="additionalLoadingMarker"></div>
+                
                 <div class="article-items__info" v-if="isAllArticlesLoaded">Все статьи загружены</div>
+                
                 <div class="article-items__preloader" v-show="isAdditionalLoadingActive">
                     <div class="preloader"></div>
                 </div>
                 
             </div>
-            
             
             <article-list-empty v-else></article-list-empty>
             
@@ -44,6 +44,8 @@
     import ArticleListEmpty from '../components/ArticleListEmpty';
     import ArticleItem from '../components/ArticleItem';
 
+    let observer = null;
+    
     export default {
         components: {
             ArticleListEmpty,
@@ -56,8 +58,6 @@
                 isAllArticlesLoaded: false,
                 articlesList: [],
 
-                // todo обсервер вынести за реактивность
-                observer: null,
                 loadingArticlesNumber: 5,
                 
                 lastArticleCreatedTime: null
@@ -65,26 +65,22 @@
         },
 
         methods: {
-            removeArticle(articleId) {
-                const indexForRemove = this.articlesList.findIndex(item => item.id === articleId );
-                const url = createUrlService.article(articleId, this.$store.getters.token);
-                
-                //todo перенести обработку прогресса внутрь компоннета
-                const articleForRemove = this.articlesList[indexForRemove];
-                articleForRemove.isInProcessing = true;
-
-                fetch(url, {
-                        method: 'DELETE'
-                    })
-                    .then(() => {
-                        this.articlesList.splice(indexForRemove, 1);
-                    })
-            },
+            // removeArticle(articleId) {
+            //     const indexForRemove = this.articlesList.findIndex(item => item.id === articleId );
+            //     const url = createUrlService.article(articleId, this.$store.getters.token);
+            //
+            //     fetch(url, {
+            //             method: 'DELETE'
+            //         })
+            //         .then(() => {
+            //             this.articlesList.splice(indexForRemove, 1);
+            //         })
+            // },
             
             createLoadingObserver() {
                 if( !this.$refs.additionalLoadingMarker ) return;
 
-                this.observer = new IntersectionObserver( (entries) => {
+                observer = new IntersectionObserver( (entries) => {
                     if(entries[0].intersectionRatio !== 1) return;
                     this.additionalLoading();
                 }, {
@@ -92,12 +88,12 @@
                     rootMargin: '0px',
                     threshold: 1
                 });
-                this.observer.observe(this.$refs.additionalLoadingMarker);
+                observer.observe(this.$refs.additionalLoadingMarker);
             },
             
             destroyLoadingObserver() {
-                this.observer.disconnect();
-                this.observer = null;
+                observer.disconnect();
+                observer = null;
             },
             
             stopAdditionalLoading() {

@@ -1,4 +1,12 @@
 export default {
+    startPreloader(state) {
+        state.isLoading = true;
+    },
+
+    stopPreloader(state) {
+        state.isLoading = false;
+    },
+
     addToFavorites(state, articleId) {
         state.list.push(articleId);
     },
@@ -9,13 +17,5 @@ export default {
 
     setFavorites(state, newFavoritesList) {
         state.list = newFavoritesList;
-    },
-
-    startPreloader(state) {
-        state.isLoading = true;
-    },
-
-    stopPreloader(state) {
-        state.isLoading = false;
     },
 }

@@ -9,6 +9,10 @@ export default {
         context.commit('stopPreloader');
     },
 
+    clearFavorites(context) {
+        context.commit('setFavorites', []);
+    },
+
     async preloadFavorites(context) {
         context.dispatch('startPreloader');
         try {
@@ -64,10 +68,12 @@ export default {
             if(!response.ok) {
                 throw new Error('Ошибка загрузки избранного');
             }
-            // const responseData = await response.json();
 
         } catch (e) {
-            console.log(e.message);
+            this.$store.dispatch('notify/show', {
+                text: e.message,
+                type: 'error'
+            });
         }
 
     },

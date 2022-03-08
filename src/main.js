@@ -6,6 +6,7 @@ import createValidation from './validate';
 
 
 createValidation();
+
 const app = createApp(App);
 
 app.use(store)

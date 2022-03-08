@@ -9,6 +9,10 @@ export default {
         return state.token;
     },
 
+    expireTime(state) {
+        return state.expireTime;
+    },
+
     userId(state) {
         return state.id;
     },

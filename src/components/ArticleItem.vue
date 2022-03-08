@@ -4,12 +4,11 @@
         @click="openArticle(article.id)"
     >
         <div class="article-item__name">{{article.name}}</div>
+        
         <div class="article-item__text">{{article.shortText}}</div>
         
         <div class="article-item__row">
-            
             <div v-if="article.isArchived" class="article-item__archive-caption">В архиве</div>
-            
             <p>
                 Автор: <strong>{{ article.creatorFullName }}</strong>
             </p>
@@ -46,6 +45,8 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
+    
     export default {
         props: ['article'],
         computed: {
@@ -60,13 +61,10 @@
                 });
             },
             
-            // todo заменить на mapGetters
-            isAuth() {
-                return this.$store.getters.isAuth;
-            },
+            ...mapGetters(['isAuth', 'userId']),
 
             isCreator() {
-                return this.article.creatorId === this.$store.getters.userId;
+                return this.article.creatorId === this.userId;
             },
         },
         methods: {

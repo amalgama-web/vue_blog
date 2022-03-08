@@ -10,6 +10,8 @@ export default {
             token: null,
             expire: null,
             fullName: null,
+
+            expireTime: null
         }
     },
     getters: getters,

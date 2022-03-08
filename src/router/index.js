@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import store from "../store";
 
 import TheArticle from '../views/TheArticle';
 import CreateArticle from '../views/CreateArticle';
@@ -12,6 +13,7 @@ import ProfileArticles from '../components/profile/ProfileArticles';
 import ProfileArchive from '../components/profile/ProfileArchive';
 import ProfileUserData from '../components/profile/ProfileUserData';
 import ProfileFavorites from "../components/profile/ProfileFavorites";
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -38,5 +40,34 @@ const router = createRouter({
   ],
 });
 
+const routesWichNeedAuth = [
+  'CreateArticle',
+  'EditArticle',
+  'Profile',
+  'ProfileUserData',
+  'ProfileFavorites',
+  'ProfileArticles',
+  'ProfileArchive',
+];
 
-export default router
+router.beforeEach((to, from, next) => {
+
+  store.dispatch('checkTokenIsExpired').then(tokenIsExpired => {
+
+    if( tokenIsExpired && routesWichNeedAuth.includes(to.name) ) {
+      store.dispatch('notify/show', {
+          text: 'Требуется авторизация',
+          type: 'warning',
+          hideAfter: 2000
+      });
+      next({ name: 'Authentication' });
+      return;
+    }
+
+    next();
+
+  });
+
+});
+
+export default router;

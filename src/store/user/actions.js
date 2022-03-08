@@ -29,7 +29,7 @@ export default {
                 id: responseData.localId,
                 email: responseData.email,
                 token: responseData.idToken,
-                expire: responseData.expiresIn,
+                expire: +responseData.expiresIn,
                 fullName: preparedFullName
             });
 
@@ -77,7 +77,7 @@ export default {
                 id: responseData.localId,
                 email: responseData.email,
                 token: responseData.idToken,
-                expire: responseData.expiresIn,
+                expire: +responseData.expiresIn,
                 fullName: responseData.displayName
             });
 
@@ -98,21 +98,51 @@ export default {
 
     setUserFromStorage(context) {
         const userData = JSON.parse( localStorage.getItem('userData') );
+        const expireTime = +localStorage.getItem('userDataExpireTime');
 
         if (!userData) return;
 
+        if( new Date().getTime() > expireTime ) {
+            context.dispatch('clearUserDataFromStorage');
+            return;
+        }
+
         context.commit('setUser', userData);
+        context.commit('setUserExpireTime', expireTime);
         context.dispatch('preloadFavorites');
     },
 
     setUser(context, userData) {
+
+        const expireTime = new Date().getTime() + userData.expire * 1000 - 300 * 1000;
+
         context.commit('setUser', userData);
+        context.commit('setUserExpireTime', expireTime);
+
         localStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.setItem('userDataExpireTime', expireTime);
+
         context.dispatch('preloadFavorites');
     },
 
     logout(context) {
         context.commit('logout');
+        context.dispatch('clearFavorites');
+        context.dispatch('clearUserDataFromStorage')
+    },
+
+    clearUserDataFromStorage() {
         localStorage.removeItem('userData');
+        localStorage.removeItem('userDataExpireTime');
+    },
+
+    checkTokenIsExpired(context) {
+
+        if( new Date().getTime() > context.getters.expireTime ) {
+            context.dispatch('logout');
+            return true;
+        }
+
+        return false;
     }
 }

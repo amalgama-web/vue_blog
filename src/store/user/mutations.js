@@ -7,11 +7,17 @@ export default {
         state.email = userData.email;
     },
 
+    setUserExpireTime(state, expireTime) {
+        state.expireTime = expireTime;
+    },
+
     logout(state) {
         state.id = null;
         state.email = null;
         state.token = null;
         state.expire = null;
         state.fullName = null;
+
+        state.expireTime = null;
     }
 }

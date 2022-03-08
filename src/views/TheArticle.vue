@@ -15,7 +15,6 @@
         <div v-else-if="isArticleExist">
     
             <article-block :article="currentArticle"
-                           @remove-article="removeArticle"
             ></article-block>
     
             <comment-block v-if="isCommentsDataLoaded"
@@ -214,25 +213,25 @@
                 }
             },
 
-            removeArticle(articleId) {
-                
-                this.showPageloader();
-
-                const url = createUrlService.article(articleId, this.$store.getters.token);
-
-                fetch(url, {
-                        method: 'DELETE'
-                    })
-                    .then(response => {
-                        return response.json();
-                    })
-                    .then(() => {
-                    })
-                    .finally(() => {
-                        this.hidePageloader();
-                        this.$router.push({ name: 'Home' });
-                    });
-            },
+            // removeArticle(articleId) {
+            //
+            //     this.showPageloader();
+            //
+            //     const url = createUrlService.article(articleId, this.$store.getters.token);
+            //
+            //     fetch(url, {
+            //             method: 'DELETE'
+            //         })
+            //         .then(response => {
+            //             return response.json();
+            //         })
+            //         .then(() => {
+            //         })
+            //         .finally(() => {
+            //             this.hidePageloader();
+            //             this.$router.push({ name: 'Home' });
+            //         });
+            // },
 
             async loadArticle() {
                 const url = createUrlService.article(this.$route.params.id);
