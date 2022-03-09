@@ -83,8 +83,6 @@
 
         props: ['preloadArticleId'],
 
-        inject: ['showNotification'],
-
         data() {
             return {
                 name: '',

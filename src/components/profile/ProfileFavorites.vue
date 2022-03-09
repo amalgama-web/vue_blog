@@ -35,8 +35,6 @@
             ArticleItem
         },
         
-        inject: ['showNotification'],
-        
         data() {
             return {
                 isDataLoading: false,
@@ -69,8 +67,11 @@
                     .then(responseData => {
                         this.articlesList = articleService.createUserFavoritesList(responseData, this.$store.getters.favoritesList);
                     })
-                    .catch(err => {
-                        this.showNotification(err.message, 'error');
+                    .catch(e => {
+                        this.$store.dispatch('notify/show', {
+                            text: e.message,
+                            type: 'error'
+                        });
                         this.isError = true;
                     })
                     .finally(() => {
@@ -83,7 +84,6 @@
             favoritesCount(newVal, oldVal) {
                 if(oldVal !== 0) return;
                 this.loadFavoritesArticles();
-
             }
         },
         

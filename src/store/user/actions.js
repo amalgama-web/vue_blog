@@ -136,13 +136,4 @@ export default {
         localStorage.removeItem('userDataExpireTime');
     },
 
-    checkTokenIsExpired(context) {
-
-        if( new Date().getTime() > context.getters.expireTime ) {
-            context.dispatch('logout');
-            return true;
-        }
-
-        return false;
-    }
 }

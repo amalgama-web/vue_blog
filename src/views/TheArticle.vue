@@ -81,7 +81,7 @@
             }
         },
         
-        inject: ['showPageloader', 'hidePageloader', 'showNotification'],
+        inject: ['showPageloader', 'hidePageloader'],
         
         data() {
             return {

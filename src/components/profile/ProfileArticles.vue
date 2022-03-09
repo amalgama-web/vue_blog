@@ -38,8 +38,6 @@
             ArticleItem
         },
 
-        inject: ['showNotification'],
-
         data() {
             return {
                 isDataLoading: false,
@@ -59,19 +57,22 @@
                     const url = createUrlService.listOfUserArticles(this.$store.getters.userId);
                     const response = await fetch(url);
                     if(!response.ok) {
-                        throw new Error('Ошибка загрузки данных');
+                        throw new Error('Ошибка при загрузке статей');
                     }
 
                     const responseData = await response.json();
                     if(!responseData) {
-                        throw new Error('Ошибка загрузки данных');
+                        throw new Error('Ошибка при загрузке статей');
                     }
                     
                     this.articlesList = articleService.createUserArticlesList(responseData);
 
 
-                } catch (err) {
-                    this.showNotification(err.message, 'error');
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        text: e.message,
+                        type: 'error'
+                    });
                     this.isError = true;
                 } finally {
                     this.isDataLoading = false;

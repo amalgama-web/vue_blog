@@ -35,8 +35,6 @@
             ArticleItem
         },
 
-        inject: ['showNotification'],
-
         data() {
             return {
                 isDataLoading: false,
@@ -70,9 +68,13 @@
 
                     this.articlesList = articleService.createUserArchivedArticlesList(responseData);
                     
-                } catch (err) {
+                } catch (e) {
+
+                    this.$store.dispatch('notify/show', {
+                        text: e.message,
+                        type: 'error'
+                    });
                     
-                    this.showNotification(err.message, 'error');
                     this.isError = true;
                     
                 } finally {

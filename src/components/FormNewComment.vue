@@ -23,7 +23,7 @@
             Field,
             ErrorMessage
         },
-        inject: ['addComment', 'showNotification'],
+        inject: ['addComment'],
 
         props: ['parentCommentId'],
         

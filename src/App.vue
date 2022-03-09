@@ -1,11 +1,7 @@
 <template>
     <div class="wrapper">
         
-        <base-notification :text="notificationMessage"
-                           :type="notificationType"
-                           :is-visible="notificationVisible"
-                           @hide-notification="hideNotification"
-        ></base-notification>
+        <base-notification></base-notification>
         
         <div class="page-preloader" v-if="isPageloaderVisible">
             <div class="preloader"></div>
@@ -42,17 +38,11 @@
             return {
                 showPageloader: this.showPageloader,
                 hidePageloader: this.hidePageloader,
-                
-                showNotification: this.showNotification,
             }
         },
         data() {
             return {
                 isPageloaderVisible: false,
-                
-                notificationMessage: '',
-                notificationVisible: false,
-                notificationType: ''
             }
         },
         computed: {
@@ -66,18 +56,6 @@
             hidePageloader() {
                 this.isPageloaderVisible = false;
             },
-            
-            showNotification(text, type) {
-                this.notificationVisible = true;
-                this.notificationMessage = text;
-                this.notificationType = type;
-            },
-            
-            hideNotification() {
-                this.notificationVisible = false;
-            },
-            
-            
         },
         
         created() {

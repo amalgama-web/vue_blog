@@ -39,8 +39,6 @@
         components: {
         },
         
-        inject: ['showNotification'],
-        
         data() {
             return {
                 isDataLoading: false,
@@ -71,12 +69,12 @@
                         })
                     });
                     if(!response.ok) {
-                        throw new Error('Ошибка загрузки данных');
+                        throw new Error('Ошибка загрузки данных пользователя');
                     }
 
                     const responseData = await response.json();
                     if(!responseData || !responseData.users || !responseData.users[0]) {
-                        throw new Error('Ошибка загрузки данных');
+                        throw new Error('Ошибка загрузки данных пользователя');
                     }
                     
                     const userData = responseData.users[0];
@@ -87,8 +85,11 @@
                     this.emailVerified = userData.emailVerified;
                     this.lastLoginAt = textService.getFormattedTime(+userData.lastLoginAt);
 
-                } catch (err) {
-                    this.showNotification(err.message, 'error');
+                } catch (e) {
+                    this.$store.dispatch('notify/show', {
+                        text: e.message,
+                        type: 'error'
+                    });
                     this.isError = true;
                 } finally {
                     this.isDataLoading = false;
