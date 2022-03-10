@@ -1,5 +1,5 @@
 <template>
-    <section class="l-container _v-padding">
+    <section>
     
         <router-link to="/" class="button">
             ← К списку статей
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-    import FormEditArticle from '../components/FormEditArticle'
+    import FormEditArticle from '../components/article/FormEditArticle'
 
     export default {
         components: {

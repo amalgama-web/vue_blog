@@ -1,9 +1,5 @@
 <template>
-    <section class="l-container _v-padding">
-        <router-link to="/" class="button">
-            ← К списку статей
-        </router-link>
-        
+    <section>
         <Form class="auth-form"
               :class="{'preloader-overlay': isInProcessing}"
               @submit="signUp"

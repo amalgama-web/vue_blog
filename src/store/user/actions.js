@@ -115,6 +115,7 @@ export default {
     setUser(context, userData) {
 
         const expireTime = new Date().getTime() + userData.expire * 1000 - 300 * 1000;
+        // const expireTime = new Date().getTime() + userData.expire * 1000 - 3590 * 1000;
 
         context.commit('setUser', userData);
         context.commit('setUserExpireTime', expireTime);

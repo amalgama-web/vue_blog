@@ -9,12 +9,15 @@
         
         <the-header></the-header>
         
-        
-        <router-view v-slot="{ Component }">
-            <transition name="route">
-                <component :is="Component" />
-            </transition>
-        </router-view>
+        <base-breadcrumbs></base-breadcrumbs>
+
+        <div class="l-container page-container">
+            <router-view v-slot="{ Component }">
+                <transition name="route">
+                    <component :is="Component" />
+                </transition>
+            </router-view>
+        </div>
         
         <div class="l-prefooter"></div>
     </div>
@@ -25,12 +28,14 @@
 
 <script>
     import BaseNotification from './components/BaseNotification';
+    import BaseBreadcrumbs from './components/BaseBreadcrumbs';
     import TheHeader from './components/TheHeader';
     import TheFooter from './components/TheFooter';
 
     export default {
         components: {
             BaseNotification,
+            BaseBreadcrumbs,
             TheHeader,
             TheFooter
         },
@@ -60,7 +65,7 @@
         
         created() {
             this.$store.dispatch('setUserFromStorage');
-        }
+        },
     }
 </script>
 
@@ -190,8 +195,15 @@
             padding-top: 40px;
             padding-bottom: 40px;
         }
+        &._v-padding-sm {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
     }
     
+    .page-container {
+        padding-top: 40px;
+    }
     .error-message {
         font-size: 12px;
         font-style: italic;

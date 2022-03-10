@@ -71,8 +71,8 @@
 
 <script>
     import {Form, Field, ErrorMessage} from 'vee-validate';
-    import textService from '../services/textService';
-    import createUrlService from "../services/createUrlService";
+    import textService from '../../services/textService';
+    import createUrlService from "../../services/createUrlService";
 
     export default {
         components: {

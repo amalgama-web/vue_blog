@@ -60,10 +60,10 @@
     import commentsService from '../services/commentsService';
     import articleService from '../services/articleService';
     import createUrlService from '../services/createUrlService';
-    import FormNewComment from '../components/FormNewComment';
-    import ArticleBlock from '../components/ArticleBlock';
-    import CommentBlock from '../components/CommentBlock';
-    import ArticleNotExist from '../components/ArticleNotExist';
+    import FormNewComment from '../components/comments/FormNewComment';
+    import ArticleBlock from '../components/article/ArticleBlock';
+    import CommentBlock from '../components/comments/CommentBlock';
+    import ArticleNotExist from '../components/article/ArticleNotExist';
     import { mapGetters } from 'vuex';
 
     export default {

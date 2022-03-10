@@ -1,5 +1,5 @@
 <template>
-    <section class="l-container _v-padding">
+    <section>
         
         <div class="article-list" v-cloak>
             
@@ -41,8 +41,8 @@
 <script>
     import articleService from '../services/articleService';
     import createUrlService from '../services/createUrlService';
-    import ArticleListEmpty from '../components/ArticleListEmpty';
-    import ArticleItem from '../components/ArticleItem';
+    import ArticleListEmpty from '../components/articles-list/ArticleListEmpty';
+    import ArticleItem from '../components/articles-list/ArticleItem';
 
     let observer = null;
     

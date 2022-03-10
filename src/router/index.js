@@ -18,42 +18,113 @@ import ProfileFavorites from "../components/profile/ProfileFavorites";
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes: [
-        {path: '/', component: ArticlesList, name: 'Home'},
-        {path: '/article/:id', component: TheArticle, name: 'TheArticle'},
-        {path: '/create', component: CreateArticle, name: 'CreateArticle'},
-        {path: '/edit/:id', component: EditArticle, name: 'EditArticle'},
-        {path: '/authentication', component: Authentication, name: 'Authentication'},
-        {path: '/registration', component: Registration, name: 'Registration'},
+        {
+            path: '/',
+            component: ArticlesList,
+            name: 'Home',
+            meta: {
+                ruName: 'Главная'
+            }
+        },
+        {
+            path: '/article/:id',
+            component: TheArticle,
+            name: 'TheArticle',
+            meta: {
+                ruName: 'Просмотр статьи'
+            }
+        },
+        {
+            path: '/create',
+            component: CreateArticle,
+            name: 'CreateArticle',
+            meta: {
+                ruName: 'Создание статьи',
+                needAuth: true
+            }
+        },
+        {
+            path: '/edit/:id',
+            component: EditArticle,
+            name: 'EditArticle',
+            meta: {
+                ruName: 'Редактор статьи',
+                needAuth: true
+            }
+        },
+        {
+            path: '/authentication',
+            component: Authentication,
+            name: 'Authentication',
+            meta: {
+                ruName: 'Авторизация'
+            }
+        },
+        {
+            path: '/registration',
+            component: Registration,
+            name: 'Registration',
+            meta: {
+                ruName: 'Регистрация'
+            }
+        },
 
         {
             path: '/profile',
             component: TheProfile,
             name: 'Profile',
             redirect: '/profile/user',
+            meta: {
+                ruName: 'Профиль',
+                needAuth: true,
+                testParent: 'parent'
+            },
             children: [
-                {path: '/profile/user', component: ProfileUserData, name: 'ProfileUserData'},
-                {path: '/profile/favorites', component: ProfileFavorites, name: 'ProfileFavorites'},
-                {path: '/profile/articles', component: ProfileArticles, name: 'ProfileArticles'},
-                {path: '/profile/archive', component: ProfileArchive, name: 'ProfileArchive'},
+                {
+                    path: 'user',
+                    component: ProfileUserData,
+                    name: 'ProfileUserData',
+                    meta: {
+                        ruName: 'Ваши данные',
+                        needAuth: true
+                    },
+                },
+                {
+                    path: 'favorites',
+                    component: ProfileFavorites,
+                    name: 'ProfileFavorites',
+                    meta: {
+                        ruName: 'Избранное',
+                        needAuth: true
+                    },
+                },
+                {
+                    path: 'articles',
+                    component: ProfileArticles,
+                    name: 'ProfileArticles',
+                    meta: {
+                        ruName: 'Список ваших статей',
+                        needAuth: true
+                    },
+                },
+                {
+                    path: 'archive',
+                    component: ProfileArchive,
+                    name: 'ProfileArchive',
+                    meta: {
+                        ruName: 'Список ваших архивных статей',
+                        needAuth: true
+                    },
+                },
             ]
         },
     ],
 });
 
-const routesWichNeedAuth = [
-    'CreateArticle',
-    'EditArticle',
-    'Profile',
-    'ProfileUserData',
-    'ProfileFavorites',
-    'ProfileArticles',
-    'ProfileArchive',
-];
-
 router.beforeEach((to, from, next) => {
 
     const tokenIsExpired = new Date().getTime() > store.getters.expireTime;
-    const nextPageNeedAuth = routesWichNeedAuth.includes(to.name);
+    const nextPageNeedAuth = to.meta.needAuth;
 
     if (tokenIsExpired && nextPageNeedAuth) {
 
@@ -63,7 +134,7 @@ router.beforeEach((to, from, next) => {
             hideAfter: 2000
         });
 
-        if(store.getters.isAuth) store.dispatch('logout');
+        if (store.getters.isAuth) store.dispatch('logout');
 
         next({name: 'Authentication'});
 

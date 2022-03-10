@@ -28,7 +28,7 @@
 <script>
     import articleService from "../../services/articleService";
     import createUrlService from "../../services/createUrlService";
-    import ArticleItem from "../ArticleItem";
+    import ArticleItem from "../articles-list/ArticleItem";
 
     export default {
         components: {

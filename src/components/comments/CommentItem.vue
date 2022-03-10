@@ -53,8 +53,8 @@
 </template>
 
 <script>
-    import FormNewComment from '../components/FormNewComment';
-    import textService from "../services/textService";
+    import FormNewComment from './FormNewComment';
+    import textService from "../../services/textService";
 
     export default {
         components: {

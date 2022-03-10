@@ -19,7 +19,7 @@
 
 
 <script>
-    import CommentItem from '../components/CommentItem';
+    import CommentItem from './CommentItem';
     
     export default {
         components: {

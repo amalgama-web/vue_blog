@@ -15,7 +15,7 @@
 
 <script>
     import { Form, Field, ErrorMessage } from 'vee-validate';
-    import textService from '../services/textService';
+    import textService from '../../services/textService';
 
     export default {
         components: {

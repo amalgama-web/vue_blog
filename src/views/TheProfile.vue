@@ -1,5 +1,5 @@
 <template>
-    <div class="l-container _v-padding">
+    <section>
         <h1>Профиль</h1>
         
         <ul class="tabs">
@@ -30,7 +30,7 @@
                 <component :is="Component" />
             </transition>
         </router-view>
-    </div>
+    </section>
 </template>
 
 <script>
