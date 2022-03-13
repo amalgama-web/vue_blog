@@ -1,20 +1,17 @@
 <template>
-    <transition name="tabs" mode="out-in">
-        <div v-show="routes.length" class="l-container">
-            <ul class="breadcrumbs">
-                <li class="breadcrumbs__item">
-                    <router-link :to="{name: 'Home'}">Главная</router-link>
-                </li>
-                <li v-for="route in routes"
-                    :key="route.name"
-                    class="breadcrumbs__item"
-                >
-                    {{route.meta.ruName}}
-    <!--                <router-link :to="{name: route.name}">{{route.meta.ruName}}</router-link>-->
-                </li>
-            </ul>
-        </div>
-    </transition>
+    <div v-show="routes.length" class="l-container">
+        <ul class="breadcrumbs">
+            <li class="breadcrumbs__item">
+                <router-link :to="{name: 'Home'}">Главная</router-link>
+            </li>
+            <li v-for="route in routes"
+                :key="route.name"
+                class="breadcrumbs__item"
+            >
+                {{route.meta.ruName}}
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>

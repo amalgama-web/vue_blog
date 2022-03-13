@@ -86,7 +86,6 @@ const router = createRouter({
                     name: 'ProfileUserData',
                     meta: {
                         ruName: 'Ваши данные',
-                        needAuth: true
                     },
                 },
                 {
@@ -95,7 +94,6 @@ const router = createRouter({
                     name: 'ProfileFavorites',
                     meta: {
                         ruName: 'Избранное',
-                        needAuth: true
                     },
                 },
                 {
@@ -104,7 +102,6 @@ const router = createRouter({
                     name: 'ProfileArticles',
                     meta: {
                         ruName: 'Список ваших статей',
-                        needAuth: true
                     },
                 },
                 {
@@ -113,7 +110,6 @@ const router = createRouter({
                     name: 'ProfileArchive',
                     meta: {
                         ruName: 'Список ваших архивных статей',
-                        needAuth: true
                     },
                 },
             ]
