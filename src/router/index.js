@@ -7,6 +7,9 @@ import ArticlesList from '../views/ArticlesList';
 import EditArticle from '../views/EditArticle';
 import Authentication from '../views/TheAuthentication';
 import Registration from '../views/TheRegistration';
+import AboutPage from '../views/AboutPage';
+import ContactsPage from '../views/ContactsPage';
+import NotFound from '../views/NotFound';
 
 import TheProfile from '../views/TheProfile';
 import ProfileArticles from '../components/profile/ProfileArticles';
@@ -70,6 +73,24 @@ const router = createRouter({
         },
 
         {
+            path: '/about',
+            component: AboutPage,
+            name: 'About',
+            meta: {
+                ruName: 'О проекте'
+            }
+        },
+
+        {
+            path: '/contacts',
+            component: ContactsPage,
+            name: 'Contacts',
+            meta: {
+                ruName: 'Контакты'
+            }
+        },
+
+        {
             path: '/profile',
             component: TheProfile,
             name: 'Profile',
@@ -114,6 +135,15 @@ const router = createRouter({
                 },
             ]
         },
+
+        {
+            path: '/:notFount(.*)',
+            component: NotFound,
+            name: 'NotFound',
+            meta: {
+                ruName: 'Страница не найдена'
+            }
+        }
     ],
 });
 
