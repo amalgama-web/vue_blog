@@ -1,4 +1,4 @@
-# TestTaskVueJS
+# Vue Blog
 
 ## Project setup
 ```
